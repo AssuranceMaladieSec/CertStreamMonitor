@@ -1,4 +1,4 @@
-# Certstream-Monitor
+# CertStreamMonitor
 
 Monitor certificates generated for specific domain strings and associated, and store data into sqlite3 database.
 
@@ -28,7 +28,7 @@ Configurable parameters are:
 
 ## Usage
 ~~~
-$ python3 ./CertstreamMonitor.py -c conf/example.conf
+$ python3 ./CertStreamMonitor.py -c conf/example.conf
 Looking for these strings: paypal|apple|account|secure|login
 Connection established to CertStream! Listening for events...
 [30/11/17 11:24:37] paypal.com-myaccounts-countrys-pages-login.gq (SAN: ) (Issuer: /C=US/O=Let's Encrypt/CN=Let's Encrypt Authority X3) (Fingerprint: 73:2A:BB:A7:3C:BB:4F:73:1E:CC:21:16:8A:E4:4D:2F:54:1E:45:2B) (StartTime: 30/11/17 - 09:05:48 UTC)
