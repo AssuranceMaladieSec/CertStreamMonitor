@@ -24,7 +24,7 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
-VERSION = "0.3"
+VERSION = "0.4"
 
 # Usage
 def usage():
@@ -107,18 +107,18 @@ def print_callback(message, context):
 		SAN = ",".join(message['data']['leaf_cert']['all_domains'][1:])
 		Issuer =  message['data']['chain'][0]['subject']['aggregated']
 		Fingerprint = message['data']['leaf_cert']['fingerprint']
-		Startime = datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).strftime('%d/%m/%y - %H:%M:%S UTC')
-		FirstSeen = format(datetime.datetime.now().strftime('%d/%m/%y %H:%M:%S'))
+		Startime = datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()
+		FirstSeen = format(datetime.datetime.utcnow().replace(microsecond=0).isoformat())
 		# Test if entry still exist in DB
 		if SQL.SQLiteVerifyEntry(TABLEname, Domain) is 0:
 			SQL.SQLiteInsert(TABLEname, Domain, SAN, Issuer, Fingerprint, Startime, FirstSeen)
-			sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().strftime('%d/%m/%y %H:%M:%S'), domain, ",".join(message['data']['leaf_cert']['all_domains'][1:]),message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).strftime('%d/%m/%y - %H:%M:%S UTC')))
+			sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), domain, ",".join(message['data']['leaf_cert']['all_domains'][1:]),message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
 			sys.stdout.flush()
 
 
 	# If just one keyword occurence, put data into debug log file
 	elif FindNb == 1:
-		logging.debug("{} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(domain, ",".join(message['data']['leaf_cert']['all_domains'][1:]),message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).strftime('%d/%m/%y - %H:%M:%S UTC')))
+		logging.debug("{} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(domain, ",".join(message['data']['leaf_cert']['all_domains'][1:]),message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
 
 # Main
 def main ():
