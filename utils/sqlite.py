@@ -18,7 +18,7 @@ class SqliteCmd(object):
 		self.cur.execute('CREATE TABLE IF NOT EXISTS '+TABLEname+' (Domain TEXT NOT NULL PRIMARY KEY, SAN TEXT, Issuer TEXT, Fingerprint TEXT, Startime TEXT, FirstSeen TEXT, StillInvestig TEXT)')
 
 	def SQLiteInsert(self, TABLEname, Domain, SAN, Issuer, Fingerprint, Startime, FirstSeen):
-		'''Insert new Phishing Kit infos'''
+		'''Insert new entry infos'''
 		self.cur.execute('INSERT OR IGNORE INTO '+TABLEname+' (Domain, SAN, Issuer, Fingerprint, Startime, FirstSeen) VALUES (?,?,?,?,?,?);', (Domain, SAN, Issuer, Fingerprint, Startime, FirstSeen))
 		self.conn.commit()
 
