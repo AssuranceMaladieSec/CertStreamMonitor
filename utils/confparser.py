@@ -27,6 +27,19 @@ class ConfParser:
 				# Logging
 				self.LogFile = self.config['LOGGING']['LogFile']
 
+				# Proxy
+                self.Proxy = self.config['CONNECT']['Proxy']
+
+				# Reporting
+				self.Alerts_dir = self.config['REPORTING']['Alerts_dir']
+
+				# User Agent
+				self.http_UA = self.config['CONNECT']['http_UA']
+
+				# User Agent list file
+				self.UAfile = self.config['CONNECT']['UAfile']
+
+
 		except IOError:
 			#print("[!!!] Configuration file Error: "+Confile)
 			logging.error(" Configuration file Error: "+Confile)
@@ -35,4 +48,3 @@ class ConfParser:
 			err = sys.exc_info()
 			#print("[!!!] ConfParser Error: "+str(err))
 			logging.error(" ConfParser Error: "+str(err))
-
