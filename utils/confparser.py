@@ -28,7 +28,7 @@ class ConfParser:
 				self.LogFile = self.config['LOGGING']['LogFile']
 
 				# Proxy
-                self.Proxy = self.config['CONNECT']['Proxy']
+                                self.Proxy = self.config['CONNECT']['Proxy']
 
 				# Reporting
 				self.Alerts_dir = self.config['REPORTING']['Alerts_dir']
