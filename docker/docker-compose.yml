@@ -7,5 +7,5 @@ services:
     image: certstreammonitor
     container_name: certstreammonitor
     build: ./
-    tty: true
+    #tty: true
     command: python3 /opt/CertStreamMonitor/CertStreamMonitor.py -c /opt/CertStreamMonitor/conf/example.conf
