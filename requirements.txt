@@ -1,2 +1,5 @@
-certstream==1.8
-
+certstream
+requests
+ipwhois
+PySocks
+hues
