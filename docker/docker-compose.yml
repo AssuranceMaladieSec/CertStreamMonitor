@@ -1,0 +1,11 @@
+version: '2'
+
+# launch: docker-compose up --build -d
+
+services:
+  CertStreamMonitor:
+    image: certstreammonitor
+    container_name: certstreammonitor
+    build: ./
+    tty: true
+    command: python3 /opt/CertStreamMonitor/CertStreamMonitor.py -c /opt/CertStreamMonitor/conf/example.conf
