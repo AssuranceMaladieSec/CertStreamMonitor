@@ -36,7 +36,7 @@ $ pip3 install -r requirements.txt
 ~~~
 
 ## Configuration file
-You can find a configuration file example placed into 'conf' directory
+You can find a configuration file example placed into 'conf' directory.
 Configurable parameters are:
 - SearchKeywords: Keywords to look for (with '|' (or) as separator
 - DBFile: SQLite3 database file (the path and file will be created if don't exist)
@@ -78,7 +78,7 @@ Creating ./alerts/assurances-sociales.com.json : {'hostname': 'assurances-social
 - Christophe Brocas ([christophe.brocas@assurance-maladie.fr](mailto:christophe.brocas@assurance-maladie.fr))
 
 ## Presentations
-- [FRENCH] Brocas, Damonneville. ["Certificate Transparency ou comment un nouveau standard peut aider votre veille sur certaines menaces"](https://www.sstic.org/2018/presentation/certificate_transparency_ou_comment_un_nouveau_standard_peut_aider_votre_analyse_des_menaces/), SSTIC 2018
+- [FRENCH] Brocas, Damonneville. ["Certificate Transparency ou comment un nouveau standard peut aider votre veille sur certaines menaces"](https://www.sstic.org/2018/presentation/certificate_transparency_ou_comment_un_nouveau_standard_peut_aider_votre_analyse_des_menaces/), SSTIC 2018.
 
 ## License
 GNU GENERAL PUBLIC LICENSE (GPL) Version 3
