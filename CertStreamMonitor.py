@@ -99,7 +99,7 @@ def print_callback(message, context):
 		else:
 			SAN = all_SAN
 
-	FindNb = len(re.findall(SearchString, (domain or SAN)))
+	FindNb = len(re.findall(SearchString, ",".join((domain, SAN))))
 	# If more than one search keyword occurence
 	if FindNb > 1:
 		# Data extraction to populate DB
