@@ -24,7 +24,7 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
-VERSION = "0.4"
+VERSION = "0.4.1"
 
 # Usage
 def usage():
@@ -99,7 +99,7 @@ def print_callback(message, context):
 		else:
 			SAN = all_SAN
 
-	FindNb = len(re.findall(SearchString, ",".join((domain, SAN))))
+	FindNb = len(set(re.findall(SearchString, ",".join((domain, SAN)))))
 	# If more than one search keyword occurence
 	if FindNb > 1:
 		# Data extraction to populate DB
