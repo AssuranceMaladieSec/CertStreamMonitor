@@ -8,4 +8,4 @@ services:
     container_name: certstreammonitor
     build: ./
     #tty: true
-    command: python3 /opt/CertStreamMonitor/CertStreamMonitor.py -c /opt/CertStreamMonitor/conf/example.conf
+    command: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
