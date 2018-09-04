@@ -1,16 +1,16 @@
-FROM phusion/baseimage:0.10.1
+FROM alpine:latest
 
 LABEL maintainer="Damonneville Thomas <thomas.damonneville__A__assurance-maladie.fr>"
 
-CMD ["/sbin/my_init"]
+ENV INITSYSTEM=on
 
 # install packages
-RUN apt-get update && apt-get -fy upgrade
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -fy \
-supervisor \
+RUN apk --no-cache add --update \
 git \
 python3 \
-python3-pip \
+sqlite \
+openrc \
+supervisor \
 tor
 
 # Clone the project files into the docker container and install it
@@ -20,9 +20,8 @@ WORKDIR /opt/CertStreamMonitor/
 RUN pip3 install -r requirements.txt
 
 # Add custom supervisor config
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-CMD ["/usr/bin/supervisord"]
+COPY supervisord.conf /etc/supervisor/conf.d/
+CMD ["/usr/bin/supervisord"; "-c"; "/etc/supervisor/conf.d/supervisord.conf"]
 
 # Make some clean
-RUN apt-get clean
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN rm -rf /var/cache/apk/*
