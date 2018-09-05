@@ -23,9 +23,8 @@ CertStreamMonitor architecture relies on 2 scripts :
   - for each hostname not already flagged as up : check if corresponding site is up or not
   - if it is, it :
     - collects informations (IP address, AS informations, HTTP code, web page title, abuse email)
-    - write them to DB
-    - write them also to a JSON file in the `/alerts` directory (default value) to push forward investigation.
-    - flags the hostname as up
+    - write them to a JSON file in the `/alerts` directory (default value) to push forward investigation.
+    - flags the hostname in the DB as up
 
 ## Requirements
 - Python 3
