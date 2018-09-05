@@ -6,11 +6,11 @@ CertStreamMonitor architecture relies on 2 scripts :
 
 - `certstreammonitor.py`
   - this script runs as a daemon. 
-  - reading the certstream feed, it selects certificates that match your criteria (SearchKeyWords parameter in conf).
-  - it writes these certificates to the database.
+  - reading the certstream feed, it selects hostnames covered by certificates that match your criteria (SearchKeyWords parameter in conf).
+  - it writes these hostnames along with its certificate relevant informations to the database.
 - `scanhost.py`
   - this script can be run as often you want.
-  - it checks if site corresponding to the hostanme in the certificate is UP ot not.
+  - it checks if site corresponding to the hostanme stored in DB is UP ot not.
   - it collects informations about the sites that are up to DB and to a JSON file.
 
 ## Features
@@ -18,11 +18,14 @@ CertStreamMonitor architecture relies on 2 scripts :
   - monitor certstream-python feed (see [certstream-python](https://github.com/CaliDog/certstream-python))
   - choose strings you want to monitor in Subject Alt Names or Domain fields of certificates
 - **Storing:**
-  - store certificate data grabbed into a sqlite3 database
+  - store hostnames found along with its certificate relevant data into a sqlite3 database
 - **Alerting:**
-  - check if hostnames present in the certificate are up or not
-  - if they are, it collects informations (IP address, AS informations, HTTP code, web page title, abuse email) to write them to DB but also to a JSON file in the `/alerts`
-   directory (default value) to push forward investigation.
+  - for each hostname not already flagged as up : check if corresponding site is up or not
+  - if it is, it :
+    - collects informations (IP address, AS informations, HTTP code, web page title, abuse email)
+    - write them to DB
+    - write them also to a JSON file in the `/alerts` directory (default value) to push forward investigation.
+    - flags the hostname as up
 
 ## Requirements
 - Python 3
