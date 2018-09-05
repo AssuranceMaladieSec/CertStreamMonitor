@@ -28,140 +28,140 @@ VERSION = "0.4.1"
 
 # Usage
 def usage():
-	usage = """
-	-h --help		Print this help
-	-c --config		Configuration file to use
-	"""
-	print (usage)
-	sys.exit(0)
+    usage = """
+    -h --help       Print this help
+    -c --config     Configuration file to use
+    """
+    print (usage)
+    sys.exit(0)
 
 # Configuration
 def ConfAnalysis(ConfFile):
-	global CONF
-	global DBFile
-	global TABLEname
-	global LogFile
-	global SearchString
+    global CONF
+    global DBFile
+    global TABLEname
+    global LogFile
+    global SearchString
 
-	try:
-		CONF = ConfParser(ConfFile)
+    try:
+        CONF = ConfParser(ConfFile)
 
-		DBFile = CONF.DBFile
-		TABLEname = CONF.TABLEname
-		LogFile = CONF.LogFile
-		SearchString = CONF.SearchString
+        DBFile = CONF.DBFile
+        TABLEname = CONF.TABLEname
+        LogFile = CONF.LogFile
+        SearchString = CONF.SearchString
 
-	except:
-		err = sys.exc_info()
-		logging.error(" ConfParser Error: "+str(err))
+    except:
+        err = sys.exc_info()
+        logging.error(" ConfParser Error: "+str(err))
 
 # Tool options
 def args_parse():
-	global ConfFile
-	if not len(sys.argv[1:]):
-		usage()
-	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hc:", ["help", "conf="])
-	except getopt.GetoptError as err:
-		logging.error(" Option Error. Exiting..."+str(err))
-		usage()
-		sys.exit(2)
+    global ConfFile
+    if not len(sys.argv[1:]):
+        usage()
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hc:", ["help", "conf="])
+    except getopt.GetoptError as err:
+        logging.error(" Option Error. Exiting..."+str(err))
+        usage()
+        sys.exit(2)
 
-	for o,a in opts:
-		if o in ("-h", "--help"):
-			usage()
-		elif o in ("-c", "--config"):
-			if  os.path.isfile(a):
-				ConfFile = a
-			else:
-				logging.error(" Can't find configuration file. Exiting...")
-				sys.exit(1)
-		else:
-			assert False, "Unhandled Option"
-	return
+    for o,a in opts:
+        if o in ("-h", "--help"):
+            usage()
+        elif o in ("-c", "--config"):
+            if  os.path.isfile(a):
+                ConfFile = a
+            else:
+                logging.error(" Can't find configuration file. Exiting...")
+                sys.exit(1)
+        else:
+            assert False, "Unhandled Option"
+    return
 
 # CertStream
 def print_callback(message, context):
-	if message['message_type'] == "heartbeat":
-		return
+    if message['message_type'] == "heartbeat":
+        return
 
-	if message['message_type'] == "certificate_update":
-		all_domains = message['data']['leaf_cert']['all_domains']
-		all_SAN = ",".join(message['data']['leaf_cert']['all_domains'][1:])
+    if message['message_type'] == "certificate_update":
+        all_domains = message['data']['leaf_cert']['all_domains']
+        
+        if len(all_domains) == 0:
+            all_domains_str = "NULL"
+        else:
+            # convert domains list to a string of domains separate by space in order to be able to look for hostnames
+            all_domains_str = ' '.join(all_domains)
 
-		if len(all_domains) == 0:
-			domain = "NULL"
-		else:
-			domain = all_domains[0]
+    # build of the regexp pattern for the findall function : string + patterns + string
+    pattern = r"[\w\.-]*(?:" + SearchString + ")[\w\.-]*" 
+    
+    results = re.findall(pattern, all_domains_str)
+    FindNb = len(set(results))
 
-		if len(all_SAN) == 0:
-			SAN = "NULL"
-		else:
-			SAN = all_SAN
+    # If more than one search keyword occurence
+    if FindNb > 1:
+        # Data extraction to populate DB
+        for domainfound in results:
+            Domain = domainfound
+            SAN = ""
+            Issuer =  message['data']['chain'][0]['subject']['aggregated']
+            Fingerprint = message['data']['leaf_cert']['fingerprint']
+            Startime = datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()
+            FirstSeen = format(datetime.datetime.utcnow().replace(microsecond=0).isoformat())
+            # Test if entry still exist in DB
+            if SQL.SQLiteVerifyEntry(TABLEname, Domain) is 0:
+                SQL.SQLiteInsert(TABLEname, Domain, SAN, Issuer, Fingerprint, Startime, FirstSeen)
+                sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), Domain, "", message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
+                sys.stdout.flush()
 
-	FindNb = len(set(re.findall(SearchString, ",".join((domain, SAN)))))
-	# If more than one search keyword occurence
-	if FindNb > 1:
-		# Data extraction to populate DB
-		Domain = domain
-		SAN = ",".join(message['data']['leaf_cert']['all_domains'][1:])
-		Issuer =  message['data']['chain'][0]['subject']['aggregated']
-		Fingerprint = message['data']['leaf_cert']['fingerprint']
-		Startime = datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()
-		FirstSeen = format(datetime.datetime.utcnow().replace(microsecond=0).isoformat())
-		# Test if entry still exist in DB
-		if SQL.SQLiteVerifyEntry(TABLEname, Domain) is 0:
-			SQL.SQLiteInsert(TABLEname, Domain, SAN, Issuer, Fingerprint, Startime, FirstSeen)
-			sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), domain, ",".join(message['data']['leaf_cert']['all_domains'][1:]),message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
-			sys.stdout.flush()
-
-
-	# If just one keyword occurence, put data into debug log file
-	elif FindNb == 1:
-		logging.debug("{} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(domain, ",".join(message['data']['leaf_cert']['all_domains'][1:]),message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
+    # If just one keyword occurence, put data into debug log file
+    elif FindNb == 1:
+        logging.debug("{} ONE KEYWORD FOUND (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(results, "",message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
 
 # Main
 def main ():
-	global SQL
-	try:
-		# Config		
-		ConfAnalysis(ConfFile)
-		P = VerifyPath()
-		# Create files
-		P.VerifyOrCreate(DBFile)
-		P.VerifyOrCreate(LogFile)
-		# Database
-		SQL = SqliteCmd(DBFile)
-		SQL.SQLiteCreateTable(TABLEname)
+    global SQL
+    try:
+        # Config        
+        ConfAnalysis(ConfFile)
+        P = VerifyPath()
+        # Create files
+        P.VerifyOrCreate(DBFile)
+        P.VerifyOrCreate(LogFile)
+        # Database
+        SQL = SqliteCmd(DBFile)
+        SQL.SQLiteCreateTable(TABLEname)
 
-		# logging
-		logger = logging.getLogger()
-		logger.setLevel(logging.DEBUG)
+        # logging
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
 
-		# file handler (10MB, 10 rotations)
-		format = logging.Formatter('[%(levelname)s:%(name)s] %(asctime)s - %(message)s')
-		file_handler = RotatingFileHandler(LogFile, 'a', 10000000, 10)
-		file_handler.setLevel(logging.DEBUG)
-		file_handler.setFormatter(format)
-		logger.addHandler(file_handler)
+        # file handler (10MB, 10 rotations)
+        format = logging.Formatter('[%(levelname)s:%(name)s] %(asctime)s - %(message)s')
+        file_handler = RotatingFileHandler(LogFile, 'a', 10000000, 10)
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(format)
+        logger.addHandler(file_handler)
 
-		# term handler
-		stream_handler = logging.StreamHandler()
-		stream_handler.setLevel(logging.INFO)
-		logger.addHandler(stream_handler)
+        # term handler
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.INFO)
+        logger.addHandler(stream_handler)
 
-		# Work
-		logging.info("Looking for these strings: "+SearchString)
-		certstream.listen_for_events(print_callback)
-		print_callback()
+        # Work
+        logging.info("Looking for these strings: "+SearchString)
+        certstream.listen_for_events(print_callback)
+        print_callback()
 
-		SQL.SQLiteClose()
+        SQL.SQLiteClose()
 
-	except:
-		err = sys.exc_info()
-		logging.error(" Main error " + str(err))
+    except:
+        err = sys.exc_info()
+        logging.error(" Main error " + str(err))
 
 # Start 
 if __name__ == '__main__':
-	args_parse()
-	main()
+    args_parse()
+    main()
