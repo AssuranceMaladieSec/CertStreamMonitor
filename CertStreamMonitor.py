@@ -42,6 +42,7 @@ def ConfAnalysis(ConfFile):
     global TABLEname
     global LogFile
     global SearchString
+    global DetectionThreshold
 
     try:
         CONF = ConfParser(ConfFile)
@@ -50,6 +51,7 @@ def ConfAnalysis(ConfFile):
         TABLEname = CONF.TABLEname
         LogFile = CONF.LogFile
         SearchString = CONF.SearchString
+        DetectionThreshold = CONF.DetectionThreshold
 
     except:
         err = sys.exc_info()
@@ -101,7 +103,7 @@ def print_callback(message, context):
     FindNb = len(set(results))
 
     # If more than one search keyword occurence
-    if FindNb > 1:
+    if FindNb >= DetectionThreshold:
         # Data extraction to populate DB
         for domainfound in results:
             Domain = domainfound
@@ -117,8 +119,8 @@ def print_callback(message, context):
                 sys.stdout.flush()
 
     # If just one keyword occurence, put data into debug log file
-    elif FindNb == 1:
-        logging.debug("{} ONE KEYWORD FOUND (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(results, "",message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
+    elif FindNb > 0 and FindNb < DetectionThreshold:
+        logging.debug("DETECTION THRESHOLD VALUE NOT REACHED - {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(results, "",message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
 
 # Main
 def main ():
