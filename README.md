@@ -40,13 +40,14 @@ $ pip3 install -r requirements.txt
 ## Configuration file
 You can find a configuration file example placed into 'conf' directory.
 Configurable parameters are:
-- SearchKeywords: Keywords to look for (with '|' (or) as separator
-- DBFile: SQLite3 database file (the path and file will be created if don't exist)
-- TABLEname: The name of the database table
-- LogFile: The logging file (the path and file will be created if don't exist)
-- Proxy: allows to give a SOCKS or HTTP proxy to process your requests
-- UAfile: you can provide a User-Agent file to masquerade this value of requests (random change for each request)
-- Alerts_dir: you can specify where JSON alert files are written
+- `SearchKeywords`: Keywords to look for (with '|' (or) as separator)
+- `DetectionThreshold`: set the minimum number of detected hostnames before writing them to DB. Under this value, detected hostnames are only written to logfile. Default value: 1.
+- `DBFile`: SQLite3 database file (the path and file will be created if don't exist)
+- `TABLEname`: The name of the database table
+- `LogFile`: The logging file (the path and file will be created if don't exist)
+- `Proxy`: allows to give a SOCKS or HTTP proxy to process your requests
+- `UAfile`: you can provide a User-Agent file to masquerade this value of requests (random change for each request)
+- `Alerts_dir`: you can specify where JSON alert files are written
 
 ## Usage
 
