@@ -5,7 +5,7 @@ Monitor certificates generated for specific domain strings and associated, store
 CertStreamMonitor architecture relies on 2 scripts :
 
 - `certstreammonitor.py`
-  - this script runs as a daemon. 
+  - this script runs as a daemon.
   - reading the certstream feed, it selects hostnames covered by certificates that match your criteria (SearchKeyWords parameter in conf).
   - it writes these hostnames along with its certificate relevant informations to the database.
 - `scanhost.py`
@@ -14,7 +14,7 @@ CertStreamMonitor architecture relies on 2 scripts :
   - it collects informations about the sites that are up to DB and to a JSON file.
 
 ## Features
-- **Monitoring:** 
+- **Monitoring:**
   - monitor certstream-python feed (see [certstream-python](https://github.com/CaliDog/certstream-python))
   - choose strings you want to monitor in Subject Alt Names or Domain fields of certificates
 - **Storing:**
@@ -41,7 +41,7 @@ $ pip3 install -r requirements.txt
 You can find a configuration file example placed into 'conf' directory.
 Configurable parameters are:
 - `SearchKeywords`: Keywords to look for (with '|' (or) as separator)
-- `DetectionThreshold`: set the minimum number of detected hostnames before writing them to DB. Under this value, detected hostnames are only written to logfile. Default value: 1.
+- `DetectionThreshold`: set the minimum number of detected SearchKeywords in a hostname before writing it to DB. Under this value but above zero, detected hostnames are only written to logfile. Default value: 2.
 - `DBFile`: SQLite3 database file (the path and file will be created if don't exist)
 - `TABLEname`: The name of the database table
 - `LogFile`: The logging file (the path and file will be created if don't exist)
@@ -64,7 +64,7 @@ Connection established to CertStream! Listening for events...
 ~~~
 
 ~~~
-$ python3 ./scanhost.py -c conf/test.conf 
+$ python3 ./scanhost.py -c conf/test.conf
 Test all domains in DB for Internet Presence:
 *********************************************
 14:30:12 - ERROR -   https://socialparadiseweb.cf.socialparadise.cf - Connection error
