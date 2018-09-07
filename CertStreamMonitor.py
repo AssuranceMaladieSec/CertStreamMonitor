@@ -26,8 +26,11 @@ from utils.sqlite import SqliteCmd
 
 VERSION = "0.4.1"
 
-# Usage
+
 def usage():
+    """
+    CLI usage printing
+    """
     usage = """
     -h --help       Print this help
     -c --config     Configuration file to use
@@ -35,8 +38,14 @@ def usage():
     print (usage)
     sys.exit(0)
 
-# Configuration
+
 def ConfAnalysis(ConfFile):
+    """
+    configuration file analysis. Load global variables with parameters found
+    in configuration file.
+
+    :param  confFile: the configuration file
+    """
     global CONF
     global DBFile
     global TABLEname
@@ -57,8 +66,11 @@ def ConfAnalysis(ConfFile):
         err = sys.exc_info()
         logging.error(" ConfParser Error: "+str(err))
 
-# Tool options
+
 def args_parse():
+    """
+    Tools options
+    """
     global ConfFile
     if not len(sys.argv[1:]):
         usage()
@@ -69,11 +81,11 @@ def args_parse():
         usage()
         sys.exit(2)
 
-    for o,a in opts:
+    for o, a in opts:
         if o in ("-h", "--help"):
             usage()
         elif o in ("-c", "--config"):
-            if  os.path.isfile(a):
+            if os.path.isfile(a):
                 ConfFile = a
             else:
                 logging.error(" Can't find configuration file. Exiting...")
@@ -83,13 +95,18 @@ def args_parse():
     return
 
 # CertStream
+
+
 def print_callback(message, context):
+    """
+    callback that is going to be called at each CertStream message reception
+    """
     if message['message_type'] == "heartbeat":
         return
 
     if message['message_type'] == "certificate_update":
         all_domains = message['data']['leaf_cert']['all_domains']
-        
+
         if len(all_domains) == 0:
             all_domains_str = "NULL"
         else:
@@ -97,8 +114,8 @@ def print_callback(message, context):
             all_domains_str = ' '.join(all_domains)
 
     # build of the regexp pattern for the findall function : string + patterns + string
-    pattern = r"[\w\.-]*(?:" + SearchString + ")[\w\.-]*" 
-    
+    pattern = r"[\w\.-]*(?:" + SearchString + ")[\w\.-]*"
+
     results = re.findall(pattern, all_domains_str)
     FindNb = len(set(results))
 
@@ -108,25 +125,30 @@ def print_callback(message, context):
         for domainfound in results:
             Domain = domainfound
             SAN = ""
-            Issuer =  message['data']['chain'][0]['subject']['aggregated']
+            Issuer = message['data']['chain'][0]['subject']['aggregated']
             Fingerprint = message['data']['leaf_cert']['fingerprint']
-            Startime = datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()
+            Startime = datetime.datetime.utcfromtimestamp(
+                message['data']['leaf_cert']['not_before']).isoformat()
             FirstSeen = format(datetime.datetime.utcnow().replace(microsecond=0).isoformat())
             # Test if entry still exist in DB
             if SQL.SQLiteVerifyEntry(TABLEname, Domain) is 0:
                 SQL.SQLiteInsert(TABLEname, Domain, SAN, Issuer, Fingerprint, Startime, FirstSeen)
-                sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), Domain, "", message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
+                sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), Domain, "", message['data']
+                                                                                                              ['chain'][0]['subject']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
                 sys.stdout.flush()
 
     # If just one keyword occurence, put data into debug log file
     elif FindNb > 0 and FindNb < DetectionThreshold:
-        logging.debug("DETECTION THRESHOLD VALUE NOT REACHED - {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(results, "",message['data']['chain'][0]['subject']['aggregated'],message['data']['leaf_cert']['fingerprint'],datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
+        logging.debug("DETECTION THRESHOLD VALUE NOT REACHED - {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(results, "",
+                                                                                                                                   message['data']['chain'][0]['subject']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
 
 # Main
-def main ():
+
+
+def main():
     global SQL
     try:
-        # Config        
+        # Config
         ConfAnalysis(ConfFile)
         P = VerifyPath()
         # Create files
@@ -163,7 +185,8 @@ def main ():
         err = sys.exc_info()
         logging.error(" Main error " + str(err))
 
-# Start 
+
+# Start
 if __name__ == '__main__':
     args_parse()
     main()
