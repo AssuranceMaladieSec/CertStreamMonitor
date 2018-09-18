@@ -56,10 +56,13 @@ def args_parse():
     Tools options
     """
     global ConfFile
+    global fqdn_dirs
+    fqdn_dirs = False
+
     if not len(sys.argv[1:]):
         usage()
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hc:", ["help", "conf="])
+        opts, args = getopt.getopt(sys.argv[1:], "hfc:", ["help", "fqdn-dirs", "conf="])
     except getopt.GetoptError as err:
         logging.error(" Option Error. Exiting..."+str(err))
         usage()
@@ -74,9 +77,11 @@ def args_parse():
             else:
                 logging.error(" Can't find configuration file. Exiting...")
                 sys.exit(1)
+        elif o in ("-f", "--fqdn-dirs"):
+            fqdn_dirs = True
         else:
             assert False, "Unhandled Option"
-        return
+    return
 
 
 def usage():
@@ -86,6 +91,7 @@ def usage():
     usage = """
     -h --help		Print this help
     -c --config		Configuration file to use
+    -f --fqdn-dirs  Store JSON files in sub-directories based on the hostname
      """
     print (usage)
     sys.exit(0)
@@ -376,11 +382,27 @@ def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
                 cur.execute("UPDATE "+TABLEname+" SET StillInvestig= ? WHERE Domain = ? AND Fingerprint = ? ;",
                             (format(datetime.datetime.utcnow().replace(microsecond=0).isoformat()), hostname, SerialNumber))
                 conn.commit
-                print("Creating "+Alerts_dir+"/"+hostname+".json : " + str(site_infos))
-                # log the hostname under the form of a file under the /alerts subdirectory
-                # + fill the file with informations like ASN/abuse email/IP/web page title etc
-                # next task: the SOC/Cert has to investigate this host.
-                f = open(Alerts_dir+"/"+hostname+".json", "w")
+                if fqdn_dirs:
+                    # Split hostname into a reverse list (TLD first)
+                    words = hostname.split(".")[::-1]
+                    FQDN_dir = Alerts_dir
+                    for w in words:
+                        FQDN_dir = FQDN_dir + "/" + w
+                    try:
+                        os.makedirs(FQDN_dir, mode=0o777, exist_ok=True)
+                    except FileExistsError:
+                        pass
+                    except:
+                        err = sys.exc_info()
+                        logging.error(" Can't create Alerts_dir: "+str(err))
+                    print("Creating "+FQDN_dir+"/"+hostname+".json : " + str(site_infos))
+                    f = open(FQDN_dir+"/"+hostname+".json", "w")
+                else:
+                    print("Creating "+Alerts_dir+"/"+hostname+".json : " + str(site_infos))
+                    # log the hostname under the form of a file under the /alerts subdirectory
+                    # + fill the file with informations like ASN/abuse email/IP/web page title etc
+                    # next task: the SOC/Cert has to investigate this host.
+                    f = open(Alerts_dir+"/"+hostname+".json", "w")
                 json.dump(site_infos, f, indent=4)
                 f.close()
 
