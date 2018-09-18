@@ -76,7 +76,7 @@ def args_parse():
                 sys.exit(1)
         else:
             assert False, "Unhandled Option"
-        return
+    return
 
 
 def usage():
