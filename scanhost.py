@@ -30,6 +30,7 @@ import requests
 import socket
 from ipwhois import IPWhois
 import warnings
+import time
 
 
 def create_connection(db_file):
@@ -75,7 +76,7 @@ def args_parse():
                 sys.exit(1)
         else:
             assert False, "Unhandled Option"
-        return
+    return
 
 
 def usage():
@@ -88,6 +89,28 @@ def usage():
      """
     print (usage)
     sys.exit(0)
+
+
+def generate_alert_dir(path):
+    """
+    Generate the hashed directory path based on current date
+    """
+    # %m -> month
+    # %d -> day
+    # %Y -> year
+    # %H -> hour
+    # %M -> minute
+    t_hour   = time.strftime("%H")
+    t_minute = time.strftime("%M")
+    t_day    = time.strftime("%d")
+    t_month  = time.strftime("%m")
+    t_year   = time.strftime("%Y")
+    path = path.replace('%H', t_hour)
+    path = path.replace('%M', t_minute)
+    path = path.replace('%d', t_day)
+    path = path.replace('%m', t_month)
+    path = path.replace('%Y', t_year)
+    return path
 
 
 def ConfAnalysis(ConfFile):
@@ -113,7 +136,7 @@ def ConfAnalysis(ConfFile):
         LogFile = CONF.LogFile
         Proxy = CONF.Proxy
         UA = CONF.http_UA
-        Alerts_dir = CONF.Alerts_dir
+        Alerts_dir = generate_alert_dir(CONF.Alerts_dir)
         UAFILE = CONF.UAfile
 
     except Exception as err:
