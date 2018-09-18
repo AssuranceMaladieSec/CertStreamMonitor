@@ -91,6 +91,28 @@ def usage():
     sys.exit(0)
 
 
+def generate_alert_dir(path):
+    """
+    Generate the hashed directory path based on current date
+    """
+    # %m -> month
+    # %d -> day
+    # %Y -> year
+    # %H -> hour
+    # %M -> minute
+    t_hour   = time.strftime("%H")
+    t_minute = time.strftime("%M")
+    t_day    = time.strftime("%d")
+    t_month  = time.strftime("%m")
+    t_year   = time.strftime("%Y")
+    path = path.replace('%H', t_hour)
+    path = path.replace('%M', t_minute)
+    path = path.replace('%d', t_day)
+    path = path.replace('%m', t_month)
+    path = path.replace('%Y', t_year)
+    return path
+
+
 def ConfAnalysis(ConfFile):
     """
     configuration file analysis. Load global variables with parameters found
@@ -114,7 +136,7 @@ def ConfAnalysis(ConfFile):
         LogFile = CONF.LogFile
         Proxy = CONF.Proxy
         UA = CONF.http_UA
-        Alerts_dir = CONF.Alerts_dir
+        Alerts_dir = generate_alert_dir(CONF.Alerts_dir)
         UAFILE = CONF.UAfile
 
     except Exception as err:
@@ -306,28 +328,6 @@ def scan_hostname(hostname, SerialNumber, lines, Proxy, conn, site_infos):
         return {}
 
 
-def generate_alert_dir(path):
-    """
-    Generate the hashed directory path based on current date
-    """
-    # %m -> month
-    # %d -> day
-    # %Y -> year
-    # %H -> hour
-    # %M -> minute
-    t_hour   = time.strftime("%H")
-    t_minute = time.strftime("%M")
-    t_day    = time.strftime("%d")
-    t_month  = time.strftime("%m")
-    t_year   = time.strftime("%Y")
-    path = path.replace('%H', t_hour)
-    path = path.replace('%M', t_minute)
-    path = path.replace('%d', t_day)
-    path = path.replace('%m', t_month)
-    path = path.replace('%Y', t_year)
-    return path
-
-
 def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
     """
     Parse and scan all hostnames present in DB and having StillInvestig set to null or ""
@@ -348,7 +348,7 @@ def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
 
         # creating Alerts_dir if don't exist
         try:
-            os.makedirs(generate_alert_dir(Alerts_dir), mode=0o777, exist_ok=True)
+            os.makedirs(Alerts_dir, mode=0o777, exist_ok=True)
         except FileExistsError:
             pass
         except:
