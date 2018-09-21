@@ -48,8 +48,13 @@ Configurable parameters are:
 - `Proxy`: allows to give a SOCKS or HTTP proxy to process your requests
 - `UAfile`: you can provide a User-Agent file to masquerade this value of requests (random change for each request)
 - `Alerts_dir`: you can specify where JSON alert files are written
+   You can use the following strings to add time/date hashed based subdirectories:
+   %%m -> month, %%d -> day, %%Y -> year, %%H -> hour, %%M -> minute.
+   Example: Alerts_dir = ./alerts/%%Y/%%m/%%d
 
 ## Usage
+
+### CertStreamMonitor.py
 
 ~~~
 $ python3 ./CertStreamMonitor.py -c conf/example.conf
@@ -61,6 +66,16 @@ Connection established to CertStream! Listening for events...
 [2018-03-12T11:42:26] cpanel.restore-account-apple.com (SAN: mail.restore-account-apple.com,restore-account-apple.com,webdisk.restore-account-apple.com,webmail.restore-account-apple.com,www.restore-account-apple.com) (Issuer: /C=US/CN=Let's Encrypt Authority X3/O=Let's Encrypt) (Fingerprint: F3:CA:B1:C6:DE:4F:05:16:FD:06:F3:FF:29:8A:D3:1F:10:9D:50:1A) (StartTime: 2018-03-12T10:41:59)
 [2018-03-12T11:49:37] securelogin.here.att.thysseankrupp.com (SAN: ) (Issuer: /C=US/CN=Let's Encrypt Authority X3/O=Let's Encrypt) (Fingerprint: 8F:9B:98:8D:5D:9B:03:0B:4F:62:56:40:C1:DE:9A:A4:FB:2D:A3:3E) (StartTime: 2018-03-12T09:22:41)
 ...
+~~~
+
+### scanhost.py
+
+~~~
+$ python3 scanhost.py --help
+
+    -h --help		Print this help
+    -c --config		Configuration file to use
+    -f --fqdn-dirs  Store JSON files in sub-directories based on the hostname
 ~~~
 
 ~~~
