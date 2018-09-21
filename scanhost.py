@@ -192,7 +192,7 @@ def get_requests(hostname, lines, conn, Proxy):
         proxy = ""
 
     try:
-        r = requests.get(url, headers=headers, proxies=proxy)
+        r = requests.get(url, headers=headers, proxies=proxy, timeout=5)
         return r
     except requests.exceptions.SSLError as errs:
         # SSL error
