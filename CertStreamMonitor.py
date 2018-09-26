@@ -169,7 +169,7 @@ def main():
 
         # Work
         logging.info("Looking for these strings: "+SearchString)
-        certstream.listen_for_events(print_callback)
+        certstream.listen_for_events(print_callback, "wss://certstream.calidog.io")
         print_callback()
 
         SQL.SQLiteClose()
