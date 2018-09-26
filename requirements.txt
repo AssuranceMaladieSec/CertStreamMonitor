@@ -1,4 +1,4 @@
-certstream
+certstream==1.10
 requests
 ipwhois
 PySocks
