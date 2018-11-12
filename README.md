@@ -15,7 +15,7 @@ CertStreamMonitor architecture relies on 2 scripts :
 
 ## Features
 - **Monitoring:**
-  - monitor certstream-python feed (see [certstream-python](https://github.com/CaliDog/certstream-python))
+  - monitor wss://certstream.calidog.io CT logs aggregator server with certstream-python (see [certstream-python](https://github.com/CaliDog/certstream-python)), but you can choose, and operate, your own server (see [certstream-server](https://github.com/CaliDog/certstream-server/)).
   - choose strings you want to monitor in Subject Alt Names or Domain fields of certificates
 - **Storing:**
   - store hostnames found along with its certificate relevant data into a sqlite3 database
@@ -30,6 +30,7 @@ CertStreamMonitor architecture relies on 2 scripts :
 - Python 3
 - certstream
 - sqlite3
+- websocket-client
 
 ## Install
 Install the requirements
@@ -45,12 +46,13 @@ Configurable parameters are:
 - `DBFile`: SQLite3 database file (the path and file will be created if don't exist)
 - `TABLEname`: The name of the database table
 - `LogFile`: The logging file (the path and file will be created if don't exist)
-- `Proxy`: allows to give a SOCKS or HTTP proxy to process your requests
+- `Proxy`: allows to give a SOCKS or HTTP proxy to process your scanhost.py's requests (as Tor)
 - `UAfile`: you can provide a User-Agent file to masquerade this value of requests (random change for each request)
 - `Alerts_dir`: you can specify where JSON alert files are written
    You can use the following strings to add time/date hashed based subdirectories:
    %%m -> month, %%d -> day, %%Y -> year, %%H -> hour, %%M -> minute.
    Example: Alerts_dir = ./alerts/%%Y/%%m/%%d
+- `Server`: you can specify the CT logs aggregator server of your choice and HTTP proxy to connect to it
 
 ## Usage
 
