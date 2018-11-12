@@ -8,8 +8,10 @@ import sys
 import logging
 import configparser
 
+
 class ConfParser:
     '''Configuration file parser'''
+
     def __init__(self, Confile=None):
         try:
             self.config = configparser.ConfigParser()
@@ -44,15 +46,46 @@ class ConfParser:
 
                 # Detection Threshold
                 try:
-                    self.DetectionThreshold = int(self.config['SEARCH']['DetectionThreshold'])
+                    self.DetectionThreshold = int(
+                        self.config['SEARCH']['DetectionThreshold'])
                 except:
                     self.DetectionThreshold = 1
 
+                # CT logs aggregator server connection
+                try:
+                    self.ACTServer = self.config['SERVER']['ACTServer']
+                except:
+                    logging.error(
+                        " Configuration file Error: You need a CT logs Aggregator server to connect on...")
+                    sys.exit(1)
+
+                try:
+                    self.Proxy_Host = self.config['SERVER']['Proxy_Host']
+                except:
+                    self.Proxy_Host = None
+
+                try:
+                    self.Proxy_Port = self.config['SERVER']['Proxy_Port']
+                except:
+                    self.Proxy_Port = None
+
+                try:
+                    self.Proxy_Username = self.config[
+                        'SERVER']['Proxy_Username']
+                except:
+                    self.Proxy_Username = None
+
+                try:
+                    self.Proxy_Password = self.config[
+                        'SERVER']['Proxy_Password']
+                except:
+                    self.Proxy_Password = None
+
         except IOError:
             #print("[!!!] Configuration file Error: "+Confile)
-            logging.error(" Configuration file Error: "+Confile)
+            logging.error(" Configuration file Error: " + Confile)
 
         except:
             err = sys.exc_info()
             #print("[!!!] ConfParser Error: "+str(err))
-            logging.error(" ConfParser Error: "+str(err))
+            logging.error(" ConfParser Error: " + str(err))
