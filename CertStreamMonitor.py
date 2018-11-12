@@ -24,7 +24,7 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
-VERSION = "0.5"
+VERSION = "0.5.0"
 
 
 def usage():
