@@ -52,7 +52,8 @@ Configurable parameters are:
    You can use the following strings to add time/date hashed based subdirectories:
    %%m -> month, %%d -> day, %%Y -> year, %%H -> hour, %%M -> minute.
    Example: Alerts_dir = ./alerts/%%Y/%%m/%%d
-- `Server`: you can specify the CT logs aggregator server of your choice and HTTP proxy to connect to it
+- `ACTServer`: you can specify the CT logs aggregator server of your choice. By default, it is the server run by Calidog Security.
+- `Proxy_*` parameters : allow you to specify HTTP proxy informations (server, port[, user, password]) for CertStreamMonitor.py script to connect to the CT logs aggregator server.
 
 ## Usage
 
