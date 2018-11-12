@@ -24,7 +24,7 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
-VERSION = "0.4.1"
+VERSION = "0.5"
 
 
 def usage():
@@ -35,7 +35,7 @@ def usage():
     -h --help       Print this help
     -c --config     Configuration file to use
     """
-    print (usage)
+    print(usage)
     sys.exit(0)
 
 
@@ -44,7 +44,7 @@ def ConfAnalysis(ConfFile):
     configuration file analysis. Load global variables with parameters found
     in configuration file.
 
-    :param  confFile: the configuration file
+    :param  ConfFile: the configuration file
     """
     global CONF
     global DBFile
@@ -52,6 +52,11 @@ def ConfAnalysis(ConfFile):
     global LogFile
     global SearchString
     global DetectionThreshold
+    global ACTServer
+    global Proxy_Host
+    global Proxy_Port
+    global Proxy_Username
+    global Proxy_Password
 
     try:
         CONF = ConfParser(ConfFile)
@@ -61,15 +66,20 @@ def ConfAnalysis(ConfFile):
         LogFile = CONF.LogFile
         SearchString = CONF.SearchString
         DetectionThreshold = CONF.DetectionThreshold
+        ACTServer = CONF.ACTServer
+        Proxy_Host = CONF.Proxy_Host
+        Proxy_Port = CONF.Proxy_Port
+        Proxy_Username = CONF.Proxy_Username
+        Proxy_Password = CONF.Proxy_Password
 
     except:
         err = sys.exc_info()
-        logging.error(" ConfParser Error: "+str(err))
+        logging.error(" ConfParser Error: " + str(err))
 
 
 def args_parse():
     """
-    Tools options
+    Tool options
     """
     global ConfFile
     if not len(sys.argv[1:]):
@@ -77,7 +87,7 @@ def args_parse():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hc:", ["help", "conf="])
     except getopt.GetoptError as err:
-        logging.error(" Option Error. Exiting..."+str(err))
+        logging.error(" Option Error. Exiting..." + str(err))
         usage()
         sys.exit(2)
 
@@ -122,10 +132,12 @@ def print_callback(message, context):
             Fingerprint = message['data']['leaf_cert']['fingerprint']
             Startime = datetime.datetime.utcfromtimestamp(
                 message['data']['leaf_cert']['not_before']).isoformat()
-            FirstSeen = format(datetime.datetime.utcnow().replace(microsecond=0).isoformat())
+            FirstSeen = format(datetime.datetime.utcnow(
+            ).replace(microsecond=0).isoformat())
             # Test if entry still exist in DB
             if SQL.SQLiteVerifyEntry(TABLEname, Domain) is 0:
-                SQL.SQLiteInsert(TABLEname, Domain, SAN, Issuer, Fingerprint, Startime, FirstSeen)
+                SQL.SQLiteInsert(TABLEname, Domain, SAN, Issuer,
+                                 Fingerprint, Startime, FirstSeen)
                 sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), host, "", message['data']
                                                                                                               ['chain'][0]['subject']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
                 sys.stdout.flush()
@@ -156,7 +168,8 @@ def main():
         logger.setLevel(logging.DEBUG)
 
         # file handler (10MB, 10 rotations)
-        format = logging.Formatter('[%(levelname)s:%(name)s] %(asctime)s - %(message)s')
+        format = logging.Formatter(
+            '[%(levelname)s:%(name)s] %(asctime)s - %(message)s')
         file_handler = RotatingFileHandler(LogFile, 'a', 10000000, 10)
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(format)
@@ -167,9 +180,9 @@ def main():
         stream_handler.setLevel(logging.INFO)
         logger.addHandler(stream_handler)
 
-        # Work
-        logging.info("Looking for these strings: "+SearchString)
-        certstream.listen_for_events(print_callback, "wss://certstream.calidog.io")
+        # Work, connection to the CT logs aggregator (ACTServer), through a HTTP proxy if configured into configuration file
+        logging.info("Looking for these strings: " + SearchString)
+        certstream.listen_for_events(print_callback, ACTServer, http_proxy_host=Proxy_Host, http_proxy_port=Proxy_Port, http_proxy_auth=(Proxy_Username, Proxy_Password))
         print_callback()
 
         SQL.SQLiteClose()
