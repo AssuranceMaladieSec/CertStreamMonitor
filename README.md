@@ -61,7 +61,7 @@ Configurable parameters are:
 
 ~~~
 $ python3 ./CertStreamMonitor.py -c conf/example.conf
-Looking for these strings: paypal|apple|account|secure|login
+Looking for these strings: paypal|apple|account|secure|login, detection threshold: 2
 Connection established to CertStream! Listening for events...
 [2018-03-12T11:40:15] cpanel.my-appleid-apple.net (SAN: mail.my-appleid-apple.net,my-appleid-apple.net,webdisk.my-appleid-apple.net,webmail.my-appleid-apple.net,www.my-appleid-apple.net) (Issuer: /C=US/CN=Let's Encrypt Authority X3/O=Let's Encrypt) (Fingerprint: 45:11:51:2D:24:D3:04:6E:DF:49:46:6D:64:56:67:4B:0A:48:8D:93) (StartTime: 2018-03-12T10:39:40)
 [2018-03-12T11:41:19] cpanel.verification-account-apple-now.com (SAN: mail.verification-account-apple-now.com,verification-account-apple-now.com,webdisk.verification-account-apple-now.com,webmail.verification-account-apple-now.com,www.verification-account-apple-now.com) (Issuer: /C=US/CN=Let's Encrypt Authority X3/O=Let's Encrypt) (Fingerprint: 2D:90:F9:F7:83:F6:48:26:EF:C9:72:50:4B:06:FA:36:53:94:3C:8B) (StartTime: 2018-03-12T10:40:49)
