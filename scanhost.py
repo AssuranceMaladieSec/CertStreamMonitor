@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2018 Caisse nationale d'Assurance Maladie
+# Copyright (c) 2018-2019 Caisse nationale d'Assurance Maladie
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import socket
 from ipwhois import IPWhois
 import warnings
 import time
-
+import safebrowsing
 
 def create_connection(db_file):
     """ create a database connection to the SQLite database
@@ -134,6 +134,7 @@ def ConfAnalysis(ConfFile):
     global UA
     global UAFILE
     global Alerts_dir
+    global Safe_Browsing_API_Key
 
     try:
         CONF = ConfParser(ConfFile)
@@ -144,6 +145,7 @@ def ConfAnalysis(ConfFile):
         UA = CONF.http_UA
         Alerts_dir = generate_alert_dir(CONF.Alerts_dir)
         UAFILE = CONF.UAfile
+        Safe_Browsing_API_Key = CONF.Safe_Browsing_API_Key        
 
     except Exception as err:
         err = sys.exc_info()
@@ -304,6 +306,14 @@ def scan_hostname(hostname, SerialNumber, lines, Proxy, conn, site_infos):
             asn, asn_cidr, asn_country_code, asn_description, asn_abuse_email = get_ASN_Infos(
                 ipaddr)
 
+            # retrieve Google Safe Browsing Lookup API status for this hostname
+            if Safe_Browsing_API_Key is not '':
+                #apikey = 'AIzaSyALHD44fVM4OCQip_WeTA-3EIcZ8g4-X4Y'
+                sb = safebrowsing.LookupAPI(Safe_Browsing_API_Key) 
+                safe_browsing_status = sb.threat_matches_find(hostname)
+            else:
+                safe_browsing_status = "No API key in config file"
+
             # build the content of the alert file using certificate / webpage / ASN informations
             site_infos = {
                 'hostname': hostname,
@@ -315,7 +325,8 @@ def scan_hostname(hostname, SerialNumber, lines, Proxy, conn, site_infos):
                 'asn_cidr': asn_cidr,
                 'asn_country_code': asn_country_code,
                 'asn_description': asn_description,
-                'asn_abuse_email': asn_abuse_email
+                'asn_abuse_email': asn_abuse_email,
+                'safe_browsing_status': safe_browsing_status
             }
             return site_infos
         else:

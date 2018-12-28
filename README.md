@@ -22,7 +22,7 @@ CertStreamMonitor architecture relies on 2 scripts :
 - **Alerting:**
   - for each hostname not already flagged as up : check if corresponding site is up or not
   - if it is, it :
-    - collects informations (IP address, AS informations, HTTP code, web page title, abuse email)
+    - collects informations (IP address, AS informations, HTTP code, web page title, abuse email, (optional) google safe browsing status)
     - write them to a JSON file in the `/alerts` directory (default value) to push forward investigation.
     - flags the hostname in the DB as up
 
@@ -54,6 +54,7 @@ Configurable parameters are:
    Example: Alerts_dir = ./alerts/%%Y/%%m/%%d
 - `ACTServer`: you can specify the CT logs aggregator server of your choice. By default, it is the server run by Calidog Security.
 - `Proxy_*` parameters : allow you to specify HTTP proxy informations (server, port[, user, password]) for CertStreamMonitor.py script to connect to the CT logs aggregator server.
+- `Safe_Browsing\API_Key`: indicate (if you want) your Google Safe Browsing API key in order to check hostnames that are UP against Google Safe Browsing Lookup API
 
 ## Usage
 
@@ -78,7 +79,7 @@ $ python3 scanhost.py --help
 
     -h --help		Print this help
     -c --config		Configuration file to use
-    -f --fqdn-dirs  Store JSON files in sub-directories based on the hostname
+    -f --fqdn-dirs      Store JSON files in sub-directories based on the hostname
 ~~~
 
 ~~~

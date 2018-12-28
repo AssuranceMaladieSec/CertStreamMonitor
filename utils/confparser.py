@@ -81,6 +81,12 @@ class ConfParser:
                 except:
                     self.Proxy_Password = None
 
+                # Safe Browsing Status check
+                try:
+                    self.Safe_Browsing_API_Key = self.config['SAFEBROWSING']['Safe_Browsing_API_Key']
+                except:
+                    self.Safe_Browsing_API_Key = '' 
+
         except IOError:
             #print("[!!!] Configuration file Error: "+Confile)
             logging.error(" Configuration file Error: " + Confile)
