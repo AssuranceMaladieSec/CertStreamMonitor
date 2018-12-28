@@ -308,7 +308,6 @@ def scan_hostname(hostname, SerialNumber, lines, Proxy, conn, site_infos):
 
             # retrieve Google Safe Browsing Lookup API status for this hostname
             if Safe_Browsing_API_Key is not '':
-                #apikey = 'AIzaSyALHD44fVM4OCQip_WeTA-3EIcZ8g4-X4Y'
                 sb = safebrowsing.LookupAPI(Safe_Browsing_API_Key) 
                 safe_browsing_status = sb.threat_matches_find(hostname)
             else:
