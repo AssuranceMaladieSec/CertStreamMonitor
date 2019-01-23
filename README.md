@@ -15,8 +15,8 @@ CertStreamMonitor architecture relies on 2 scripts :
 
 ## Features
 - **Monitoring:**
-  - monitor wss://certstream.calidog.io CT logs aggregator server with certstream-python (see [certstream-python](https://github.com/CaliDog/certstream-python)), but you can choose, and operate, your own server (see [certstream-server](https://github.com/CaliDog/certstream-server/)).
-  - choose strings you want to monitor in Subject Alt Names or Domain fields of certificates
+  - monitor `wss://certstream.calidog.io` CT logs aggregator server with certstream-python (see [certstream-python](https://github.com/CaliDog/certstream-python)), but you can choose, and operate, your own server (see [certstream-server](https://github.com/CaliDog/certstream-server/)).
+  - choose strings you want to monitor in `Subject Alt Names` field of certificates
 - **Storing:**
   - store hostnames found along with its certificate relevant data into a sqlite3 database
 - **Alerting:**
