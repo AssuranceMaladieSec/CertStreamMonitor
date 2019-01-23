@@ -50,7 +50,7 @@ def ConfAnalysis(ConfFile):
     global DBFile
     global TABLEname
     global LogFile
-    global SearchString
+    global SearchKeywords
     global DetectionThreshold
     global ACTServer
     global Proxy_Host
@@ -64,7 +64,7 @@ def ConfAnalysis(ConfFile):
         DBFile = CONF.DBFile
         TABLEname = CONF.TABLEname
         LogFile = CONF.LogFile
-        SearchString = CONF.SearchString
+        SearchKeywords = CONF.SearchKeywords
         DetectionThreshold = CONF.DetectionThreshold
         ACTServer = CONF.ACTServer
         Proxy_Host = CONF.Proxy_Host
@@ -119,7 +119,7 @@ def print_callback(message, context):
 
     # look for pattern on *each* hostname
     for host in all_domains:
-        results = re.findall(SearchString, host)
+        results = re.findall(SearchKeywords, host)
         FindNb = len(set(results))
 
         # If search keywords occurence in the hostname is greater or equal to DetectionThreshold
@@ -181,7 +181,7 @@ def main():
         logger.addHandler(stream_handler)
 
         # Work, connection to the CT logs aggregator (ACTServer), through a HTTP proxy if configured into configuration file
-        logging.info("Looking for these strings: " + SearchString +
+        logging.info("Looking for these strings: " + SearchKeywords +
                      ", detection threshold: " + str(DetectionThreshold))
         certstream.listen_for_events(print_callback, ACTServer, http_proxy_host=Proxy_Host,
                                      http_proxy_port=Proxy_Port, http_proxy_auth=(Proxy_Username, Proxy_Password))

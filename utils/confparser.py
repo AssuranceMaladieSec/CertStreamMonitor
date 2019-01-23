@@ -20,7 +20,7 @@ class ConfParser:
                 self.config.readfp(f)
 
                 # search strings
-                self.SearchString = self.config['SEARCH']['SearchKeywords']
+                self.SearchKeywords = self.config['SEARCH']['SearchKeywords']
 
                 # Databases
                 self.DBFile = self.config['DATABASE']['DBFile']
@@ -85,7 +85,7 @@ class ConfParser:
                 try:
                     self.Safe_Browsing_API_Key = self.config['SAFEBROWSING']['Safe_Browsing_API_Key']
                 except:
-                    self.Safe_Browsing_API_Key = '' 
+                    self.Safe_Browsing_API_Key = ''
 
         except IOError:
             #print("[!!!] Configuration file Error: "+Confile)
