@@ -4,3 +4,4 @@ ipwhois
 PySocks
 hues
 websocket-client==0.48.0
+apprise

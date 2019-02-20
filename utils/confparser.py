@@ -37,6 +37,10 @@ class ConfParser:
 
                 # Reporting
                 self.Alerts_dir = self.config['REPORTING']['Alerts_dir']
+                try:
+                    self.Notification_Destination = self.config['REPORTING']['Notification_Destination']
+                except:
+                    self.Notification_Destination = None
 
                 # User Agent
                 self.http_UA = self.config['CONNECT']['http_UA']
