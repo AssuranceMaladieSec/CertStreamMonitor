@@ -32,6 +32,7 @@ from ipwhois import IPWhois
 import warnings
 import time
 import safebrowsing
+import apprise
 
 def create_connection(db_file):
     """ create a database connection to the SQLite database
@@ -134,6 +135,7 @@ def ConfAnalysis(ConfFile):
     global UA
     global UAFILE
     global Alerts_dir
+    global Notification_Destination
     global Safe_Browsing_API_Key
 
     try:
@@ -144,6 +146,7 @@ def ConfAnalysis(ConfFile):
         Proxy = CONF.Proxy
         UA = CONF.http_UA
         Alerts_dir = generate_alert_dir(CONF.Alerts_dir)
+        Notification_Destination = CONF.Notification_Destination
         UAFILE = CONF.UAfile
         Safe_Browsing_API_Key = CONF.Safe_Browsing_API_Key        
 
@@ -377,6 +380,11 @@ def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
         except:
             lines = UA
 
+        # load apprise instance with config file parameters if notifications are activated in the config file
+        if Notification_Destination is not '':
+            apobj = apprise.Apprise()
+            apobj.add(Notification_Destination)
+
         # run scan on each hostname
         for row in rows:
             hostname = row[0]
@@ -415,6 +423,11 @@ def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
                     f = open(Alerts_dir+"/"+hostname+".json", "w")
                 json.dump(site_infos, f, indent=4)
                 f.close()
+                if Notification_Destination is not '':
+                    body_site_infos = str(site_infos).replace(', \'',chr(10)+'\'')
+                    body_site_infos = body_site_infos.replace('{','')
+                    body_site_infos = body_site_infos.replace('}','')
+                    apobj.notify(title="[CertStreamMonitor] Alert: "+hostname, body=body_site_infos,)
 
         return True
 
