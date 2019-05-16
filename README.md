@@ -30,7 +30,11 @@ CertStreamMonitor architecture relies on 2 scripts :
 - Python 3
 - certstream
 - sqlite3
+- ipwhois
+- PySocks
+- hues
 - websocket-client
+- apprise
 
 ## Install
 Install the requirements
@@ -46,15 +50,18 @@ Configurable parameters are:
 - `DBFile`: SQLite3 database file (the path and file will be created if don't exist)
 - `TABLEname`: The name of the database table
 - `LogFile`: The logging file (the path and file will be created if don't exist)
-- `Proxy`: allows to give a SOCKS or HTTP proxy to process your scanhost.py's requests (as Tor)
 - `UAfile`: you can provide a User-Agent file to masquerade this value of requests (random change for each request)
 - `Alerts_dir`: you can specify where JSON alert files are written
    You can use the following strings to add time/date hashed based subdirectories:
    %%m -> month, %%d -> day, %%Y -> year, %%H -> hour, %%M -> minute.
    Example: Alerts_dir = ./alerts/%%Y/%%m/%%d
-- `ACTServer`: you can specify the CT logs aggregator server of your choice. By default, it is the server run by Calidog Security.
+
+Optional:
+- `Proxy`: allows to give a SOCKS or HTTP proxy to process your scanhost.py's requests (as Tor)
 - `Proxy_*` parameters : allow you to specify HTTP proxy informations (server, port[, user, password]) for CertStreamMonitor.py script to connect to the CT logs aggregator server.
+- `ACTServer`: you can specify the CT logs aggregator server of your choice. By default, it is the server run by Calidog Security.
 - `Safe_Browsing_API_Key`: indicate (if you want) your Google Safe Browsing API key in order to check hostnames that are UP against Google Safe Browsing Lookup API ([How-To get an API key](https://developers.google.com/safe-browsing/v4/get-started) for the Safe Browsing Lookup API).
+- `Notification_Destination`: specify a notification destination as attended by apprise package. Documentation about the format of this parameter is available on the [apprise Github page](https://github.com/caronc/apprise).
 
 ## Usage
 
@@ -100,7 +107,9 @@ Creating ./alerts/assurances-sociales.com.json : {'hostname': 'assurances-social
 - Christophe Brocas ([christophe.brocas@assurance-maladie.fr](mailto:christophe.brocas@assurance-maladie.fr))
 
 ## Presentations
-- [FRENCH] Brocas, Damonneville. ["Certificate Transparency ou comment un nouveau standard peut aider votre veille sur certaines menaces"](https://www.sstic.org/2018/presentation/certificate_transparency_ou_comment_un_nouveau_standard_peut_aider_votre_analyse_des_menaces/), SSTIC 2018.
+- SSTIC 2018 | June 2018 - C.Brocas, T. Damonneville. *"Certificate Transparency ou comment un nouveau standard peut aider votre veille sur certaines menaces"*.  [Slides (fr)](https://www.sstic.org/2018/presentation/certificate_transparency_ou_comment_un_nouveau_standard_peut_aider_votre_analyse_des_menaces/), [full article (fr)](https://www.sstic.org/media/SSTIC2018/SSTIC-actes/certificate_transparency_ou_comment_un_nouveau_sta/SSTIC2018-Article-certificate_transparency_ou_comment_un_nouveau_standard_peut_aider_votre_analyse_des_menaces-broc_AR1OQsw.pdf), [video (fr)](https://static.sstic.org/videos2018/SSTIC_2018-06-13_P04.mp4).
+- Hack-it-n 2018bis | December 2018 - C. Brocas, T. Damonneville (given by C. Brocas). *"CertStreamMonitor, use Certificate Transparency to improve your threats detection"*. [Slides (en)](https://speakerdeck.com/cbrocas/2018bis-hack-it-n-certstreammonitor-use-certificate-transparency-to-improve-your-threats-detection).
+- Toulouse hacking Convention 2019 | March 2019. C. Brocas, T. Damonneville (given by C. Brocas). *"Certificate Transparency & threats detection, 24 months later"*. [Slides (en)](https://speakerdeck.com/cbrocas/thc19-certificate-transparency-and-threats-detection-24-months-later), [video (fr)](https://www.youtube.com/watch?v=rUOQE-2NG3Y&feature=youtu.be&t=11485).
 
 ## License
 GNU GENERAL PUBLIC LICENSE (GPL) Version 3
