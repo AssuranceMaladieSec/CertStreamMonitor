@@ -91,7 +91,7 @@ $ python3 scanhost.py --help
 ~~~
 
 ~~~
-$ python3 ./scanhost.py -c conf/test.conf
+$ python3 ./scanhost.py -c conf/example.conf
 Test all domains in DB for Internet Presence:
 *********************************************
 14:30:12 - ERROR -   https://socialparadiseweb.cf.socialparadise.cf - Connection error
@@ -101,6 +101,26 @@ Creating ./alerts/socialmediaforsocialaction.com.json : {'hostname': 'socialmedi
 14:32:25 - ERROR -   https://social.socialbride.co.za - Connection error
 14:32:34 - SUCCESS - HTTP 503 - assurances-sociales.com
 Creating ./alerts/assurances-sociales.com.json : {'hostname': 'assurances-sociales.com', 'http_code': 503, 'cert_serial_number': '1A:0D:45:D9:05:15:DC:17:6C:9F:9E:47:A5:62:03:D9:25:02:F9:3C', 'webpage_title': 'Accueil', 'ip_addr': '164.132.235.17', 'asn': '16276', 'asn_cidr': '164.132.0.0/16', 'asn_country_code': 'FR', 'asn_description': 'OVH, FR', 'asn_abuse_email': 'lir@ovh.net'}
+~~~
+
+### gethost.py
+
+~~~
+$ python3 scanhost.py --help
+
+    -h --help   Print this help
+    -c --config   Configuration file to use
+    --since      Since when it displays findings (seconds)
+~~~
+
+~~~
+$ python3 ./gethost.py -c conf/example.conf --since 36000 # 10 hours
+Display all domains in DB for Internet Presence:
+************************************************
+socialparadiseweb.cf.socialparadise.cf None
+rapportannuel-assurancemaladie.paris None
+socialmediaforsocialaction.com 2019-06-12T15:54:31
+social.socialbride.co.za None
 ~~~
 
 ## Authors
