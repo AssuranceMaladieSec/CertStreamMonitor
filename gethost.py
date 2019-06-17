@@ -19,16 +19,14 @@ from __future__ import absolute_import
 from datetime import datetime
 import getopt
 import os
-import sys
-
-# Third party library imports
 from sqlite3 import connect, Error
+import sys
 
 # Own library imports
 from utils.confparser import ConfParser
 
 # Debug
-from pdb import set_trace as st
+# from pdb import set_trace as st
 
 def create_connection(db_file):
     """ create a database connection to the SQLite database
@@ -121,27 +119,33 @@ def parse_and_display_all_hostnames(TABLEname, conn, print_output=False):
     :param TABLEname: the table name storing certificate informations in database
     :param conn: db connection
 
-    :return: True if everything went fine, False if something went wrong    
+    :return: True if everything went fine, False if something went wrong
     """
     try:
         # Query rows that have not StillInvestig column already set
         # get Domain and Fingerprint column
         cur = conn.cursor()
-        cur.execute("SELECT Domain,FirstSeen,StillInvestig FROM "+TABLEname)
+        cur.execute("SELECT Domain,Issuer,Fingerprint,FirstSeen,StillInvestig FROM "+TABLEname)
         rows = cur.fetchall()
         result = dict()
 
         # run scan on each hostname
         for row in rows:
             domain = row[0]
-            first_seen = row[1]
-            still_investing = row[2]
+            issuer = row[1]
+            fingerprint = row[2]
+            first_seen = row[3]
+            still_investing = row[4]
             first_seen_date = datetime.strptime(first_seen, '%Y-%m-%dT%H:%M:%S')
             since = (datetime.utcnow() - first_seen_date).total_seconds()
             if since < SINCE:
-                result.update({domain: {"still_investing": still_investing}})
+                result.update({domain: {"issuer": issuer, "fingerprint": fingerprint, "still_investing": still_investing}})
                 if print_output:
-                    print("{} {}".format(domain, still_investing))
+                    print("{domain}  {issuer}  {fingerprint}  {still_investing}".format(
+                        domain=domain,
+                        issuer=issuer,
+                        fingerprint=fingerprint,
+                        still_investing=still_investing))
         return result
 
     except KeyboardInterrupt:
@@ -161,6 +165,9 @@ def parse_and_display_all_hostnames(TABLEname, conn, print_output=False):
 
 
 def main():
+    """
+    Main function
+    """
     ConfAnalysis(CONFFILE)
 
     # create a database connection
