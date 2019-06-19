@@ -13,6 +13,8 @@ CertStreamMonitor architecture relies on 2 scripts :
   - it checks if site corresponding to the hostanme stored in DB is UP ot not.
   - it collects informations about the sites that are up to DB and to a JSON file.
 
+Due to [@nbeguier](https://github.com/nbeguier) contribution, the project has also a `gethost.py` script that provide a way for security operators to request the last hostnames which have been detected since X seconds.
+
 ## Features
 - **Monitoring:**
   - monitor `wss://certstream.calidog.io` CT logs aggregator server with certstream-python (see [certstream-python](https://github.com/CaliDog/certstream-python)), but you can choose, and operate, your own server (see [certstream-server](https://github.com/CaliDog/certstream-server/)).
@@ -106,11 +108,11 @@ Creating ./alerts/assurances-sociales.com.json : {'hostname': 'assurances-social
 ### gethost.py
 
 ~~~
-$ python3 scanhost.py --help
+$ python3 gethost.py --help
 
     -h --help   Print this help
-    -c --config   Configuration file to use
-    --since      Since when it displays findings (seconds)
+    -c --config Configuration file to use
+    --since     Since when it displays findings (seconds)
 ~~~
 
 ~~~
