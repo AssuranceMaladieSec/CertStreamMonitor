@@ -2,7 +2,7 @@
 
 Monitor certificates generated for specific domain strings and associated, store data into sqlite3 database, alert you when sites come online.
 
-CertStreamMonitor architecture relies on 2 scripts :
+CertStreamMonitor architecture relies on 3 scripts :
 
 - `certstreammonitor.py`
   - this script runs as a daemon.
@@ -12,8 +12,8 @@ CertStreamMonitor architecture relies on 2 scripts :
   - this script can be run as often you want.
   - it checks if site corresponding to the hostanme stored in DB is UP ot not.
   - it collects informations about the sites that are up to DB and to a JSON file.
-
-Due to [@nbeguier](https://github.com/nbeguier) contribution, the project has also a `gethost.py` script that provide a way for security operators to request the last hostnames which have been detected since X seconds.
+- `gethost.py
+   - Due to [@nbeguier](https://github.com/nbeguier) contribution, the project has also a `gethost.py` script that provides a way for security operators to request the last hostnames which have been detected by `certstreammointor.py` since X seconds.
 
 ## Features
 - **Monitoring:**
