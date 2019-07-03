@@ -24,8 +24,7 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
-VERSION = "0.5.0"
-
+VERSION = "0.6.0"
 
 def usage():
     """
@@ -51,6 +50,7 @@ def ConfAnalysis(ConfFile):
     global TABLEname
     global LogFile
     global SearchKeywords
+    global BlacklistKeywords
     global DetectionThreshold
     global ACTServer
     global Proxy_Host
@@ -65,6 +65,7 @@ def ConfAnalysis(ConfFile):
         TABLEname = CONF.TABLEname
         LogFile = CONF.LogFile
         SearchKeywords = CONF.SearchKeywords
+        BlacklistKeywords = CONF.BlacklistKeywords
         DetectionThreshold = CONF.DetectionThreshold
         ACTServer = CONF.ACTServer
         Proxy_Host = CONF.Proxy_Host
@@ -119,8 +120,15 @@ def print_callback(message, context):
 
     # look for pattern on *each* hostname
     for host in all_domains:
+        is_blacklisted = False
+        if BlacklistKeywords != str():
+            is_blacklisted = re.findall(BlacklistKeywords, host)
         results = re.findall(SearchKeywords, host)
         FindNb = len(set(results))
+
+        # Matching host whith blacklisted keywords are ignored
+        if is_blacklisted and FindNb >= DetectionThreshold:
+            continue
 
         # If search keywords occurence in the hostname is greater or equal to DetectionThreshold
         # we store the hostname into DB
