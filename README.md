@@ -50,7 +50,6 @@ You can find a configuration file example placed into 'conf' directory.
 Configurable parameters are:
 - `SearchKeywords`: Keywords to look for (with '|' (or) as separator)
 - `DetectionThreshold`: set the minimum number of detected SearchKeywords in a hostname before writing it to DB. Under this value but above zero, detected hostnames are only written to logfile. Default value: 2.
-- `BlacklistKeywords`: Keywords to ignore matched hosts (with '|' (or) as separator)
 - `DBFile`: SQLite3 database file (the path and file will be created if don't exist)
 - `TABLEname`: The name of the database table
 - `LogFile`: The logging file (the path and file will be created if don't exist)
@@ -66,6 +65,7 @@ Optional:
 - `ACTServer`: you can specify the CT logs aggregator server of your choice. By default, it is the server run by Calidog Security.
 - `Safe_Browsing_API_Key`: indicate (if you want) your Google Safe Browsing API key in order to check hostnames that are UP against Google Safe Browsing Lookup API ([How-To get an API key](https://developers.google.com/safe-browsing/v4/get-started) for the Safe Browsing Lookup API).
 - `Notification_Destination`: specify a notification destination as attended by apprise package. Documentation about the format of this parameter is available on the [apprise Github page](https://github.com/caronc/apprise).
+- `BlacklistKeywords`: Keywords to ignore matched hosts (with '|' (or) as separator)
 
 ## Usage
 
