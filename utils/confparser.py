@@ -21,6 +21,10 @@ class ConfParser:
 
                 # search strings
                 self.SearchKeywords = self.config['SEARCH']['SearchKeywords']
+                try:
+                    self.BlacklistKeywords = self.config['SEARCH']['BlacklistKeywords']
+                except KeyError:
+                    self.BlacklistKeywords = str()
 
                 # Databases
                 self.DBFile = self.config['DATABASE']['DBFile']
