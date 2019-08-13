@@ -130,6 +130,10 @@ social.socialbride.co.za None
 - Thomas Damonneville ([thomas.damonneville@assurance-maladie.fr](mailto:thomas.damonneville@assurance-maladie.fr))
 - Christophe Brocas ([christophe.brocas@assurance-maladie.fr](mailto:christophe.brocas@assurance-maladie.fr))
 
+## Contributors
+- @ant1: #3
+- @xme: #8
+
 ## Presentations
 - [SSTIC 2018](https://www.sstic.org/2018/) | June 2018 - C.Brocas, T. Damonneville: *"Certificate Transparency ou comment un nouveau standard peut aider votre veille sur certaines menaces"*.  [Slides (fr)](https://www.sstic.org/2018/presentation/certificate_transparency_ou_comment_un_nouveau_standard_peut_aider_votre_analyse_des_menaces/), [full article (fr)](https://www.sstic.org/media/SSTIC2018/SSTIC-actes/certificate_transparency_ou_comment_un_nouveau_sta/SSTIC2018-Article-certificate_transparency_ou_comment_un_nouveau_standard_peut_aider_votre_analyse_des_menaces-broc_AR1OQsw.pdf), [video (fr)](https://static.sstic.org/videos2018/SSTIC_2018-06-13_P04.mp4).
 - [Hack-it-n 2018bis](http://www.hack-it-n.com/event2018bis/) | December 2018 - C. Brocas, T. Damonneville (given by C. Brocas): *"CertStreamMonitor, use Certificate Transparency to improve your threats detection"*. [Slides (en)](https://speakerdeck.com/cbrocas/2018bis-hack-it-n-certstreammonitor-use-certificate-transparency-to-improve-your-threats-detection).
