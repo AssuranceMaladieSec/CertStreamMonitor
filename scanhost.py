@@ -90,8 +90,8 @@ def usage():
     CLI usage printing
     """
     usage = """
-    -h --help		Print this help
-    -c --config		Configuration file to use
+    -h --help       Print this help
+    -c --config     Configuration file to use
     -f --fqdn-dirs  Store JSON files in sub-directories based on the hostname
      """
     print (usage)
@@ -135,6 +135,7 @@ def ConfAnalysis(ConfFile):
     global UA
     global UAFILE
     global Alerts_dir
+    global MaxAttempts
     global Notification_Destination
     global Safe_Browsing_API_Key
 
@@ -146,9 +147,10 @@ def ConfAnalysis(ConfFile):
         Proxy = CONF.Proxy
         UA = CONF.http_UA
         Alerts_dir = generate_alert_dir(CONF.Alerts_dir)
+        MaxAttempts = CONF.MaxAttempts
         Notification_Destination = CONF.Notification_Destination
         UAFILE = CONF.UAfile
-        Safe_Browsing_API_Key = CONF.Safe_Browsing_API_Key        
+        Safe_Browsing_API_Key = CONF.Safe_Browsing_API_Key
 
     except Exception as err:
         err = sys.exc_info()
@@ -361,8 +363,8 @@ def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
         # Query rows that have not StillInvestig column already set
         # get Domain and Fingerprint column
         cur = conn.cursor()
-        cur.execute("SELECT Domain,Fingerprint FROM "+TABLEname +
-                    " WHERE StillInvestig IS NULL or StillInvestig = ''")
+        cur.execute("SELECT Domain,Fingerprint,StillInvestig FROM "+TABLEname +
+                    " WHERE StillInvestig IS NULL or StillInvestig = '' or StillInvestig LIKE '_'")
         rows = cur.fetchall()
 
         # creating Alerts_dir if don't exist
@@ -389,11 +391,24 @@ def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
         for row in rows:
             hostname = row[0]
             SerialNumber = row[1]
+            Attempts = row[2]
             site_infos = {}
+
+            if Attempts is None:
+                Attempts = 0
+            else:
+                Attempts = int(Attempts)
 
             site_infos = scan_hostname(hostname, SerialNumber, lines, Proxy, conn, site_infos)
 
             if not site_infos:
+                # Save the MaxAttempts counter incremented by 1
+                Attempts += 1
+                if Attempts > MaxAttempts:
+                    Attempts = "Disabled"
+                    hues.warn('Max attempts reached for '+hostname)
+                cur.execute("UPDATE "+TABLEname+" SET StillInvestig= ? WHERE Domain = ? AND Fingerprint = ? ;",
+                            (str(Attempts), hostname, SerialNumber))
                 continue
             else:
                 # if the site is UP, we log the timestamp in the database in order to not reprocess it
