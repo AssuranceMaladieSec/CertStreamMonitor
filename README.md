@@ -28,6 +28,9 @@ CertStreamMonitor architecture relies on 3 scripts :
     - write them to a JSON file in the `/alerts` directory (default value) to push forward investigation.
     - (optional) push them to a destination (through apprise package) such as an email address, a Slack channel or even Twitter account
     - flags the hostname in the DB as up
+  - if it is not :
+    - the hostname will be checked until the Alert_Monitor_timelapse configuration variable (in days) will be reached
+    - when the limit is reached a string like `Stop checking on 2019-09-27` is included into the StillInvestig column
 
 ## Requirements
 - Python 3
