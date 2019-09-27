@@ -41,6 +41,11 @@ class ConfParser:
 
                 # Reporting
                 self.Alerts_dir = self.config['REPORTING']['Alerts_dir']
+
+                # Reporting Monitor Time laspe
+                self.Alert_Monitor_timelapse = self.config['REPORTING']['Alert_Monitor_timelapse']
+
+                # Notifications destination
                 try:
                     self.Notification_Destination = self.config['REPORTING']['Notification_Destination']
                 except:
