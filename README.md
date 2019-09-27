@@ -28,9 +28,6 @@ CertStreamMonitor architecture relies on 3 scripts :
     - write them to a JSON file in the `/alerts` directory (default value) to push forward investigation.
     - (optional) push them to a destination (through apprise package) such as an email address, a Slack channel or even Twitter account
     - flags the hostname in the DB as up
-  - if it is not :
-    - the hostname will be checked until the Alert_Monitor_timelapse configuration variable (in days) will be reached
-    - when the limit is reached a string like `Stop checking on 2019-09-27` is included into the StillInvestig column
 
 ## Requirements
 - Python 3
@@ -61,7 +58,6 @@ Configurable parameters are:
    You can use the following strings to add time/date hashed based subdirectories:
    %%m -> month, %%d -> day, %%Y -> year, %%H -> hour, %%M -> minute.
    Example: Alerts_dir = ./alerts/%%Y/%%m/%%d
-- `Alert_Monitor_timelapse`: Number of days scanhost.py will try to get information about an entry, after that the entry will not be checked anymore (default: 180 days)
 
 Optional:
 - `Proxy`: allows to give a SOCKS or HTTP proxy to process your scanhost.py's requests (as Tor)
@@ -101,7 +97,6 @@ $ python3 scanhost.py --help
 $ python3 ./scanhost.py -c conf/example.conf
 Test all domains in DB for Internet Presence:
 *********************************************
-14:30:05 - WARNING -   mvsantevision.santevision.ch - end of monitoring reached (180 days)
 14:30:12 - ERROR -   https://socialparadiseweb.cf.socialparadise.cf - Connection error
 14:32:18 - ERROR -   https://rapportannuel-assurancemaladie.paris - Connection error
 14:32:23 - SUCCESS - HTTP 200 - socialmediaforsocialaction.com

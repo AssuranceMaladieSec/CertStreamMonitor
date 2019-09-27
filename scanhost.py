@@ -65,7 +65,7 @@ def args_parse():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hfc:", ["help", "fqdn-dirs", "conf="])
     except getopt.GetoptError as err:
-        logging.error(" Option Error. Exiting..." + str(err))
+        logging.error(" Option Error. Exiting..."+str(err))
         usage()
         sys.exit(2)
 
@@ -90,8 +90,8 @@ def usage():
     CLI usage printing
     """
     usage = """
-    -h --help       Print this help
-    -c --config     Configuration file to use
+    -h --help		Print this help
+    -c --config		Configuration file to use
     -f --fqdn-dirs  Store JSON files in sub-directories based on the hostname
      """
     print (usage)
@@ -107,11 +107,11 @@ def generate_alert_dir(path):
     # %Y -> year
     # %H -> hour
     # %M -> minute
-    t_hour = time.strftime("%H")
+    t_hour   = time.strftime("%H")
     t_minute = time.strftime("%M")
-    t_day = time.strftime("%d")
-    t_month = time.strftime("%m")
-    t_year = time.strftime("%Y")
+    t_day    = time.strftime("%d")
+    t_month  = time.strftime("%m")
+    t_year   = time.strftime("%Y")
     path = path.replace('%H', t_hour)
     path = path.replace('%M', t_minute)
     path = path.replace('%d', t_day)
@@ -135,7 +135,6 @@ def ConfAnalysis(ConfFile):
     global UA
     global UAFILE
     global Alerts_dir
-    global Alert_Monitor_timelapse
     global Notification_Destination
     global Safe_Browsing_API_Key
 
@@ -147,14 +146,13 @@ def ConfAnalysis(ConfFile):
         Proxy = CONF.Proxy
         UA = CONF.http_UA
         Alerts_dir = generate_alert_dir(CONF.Alerts_dir)
-        Alert_Monitor_timelapse = CONF.Alert_Monitor_timelapse
         Notification_Destination = CONF.Notification_Destination
         UAFILE = CONF.UAfile
-        Safe_Browsing_API_Key = CONF.Safe_Browsing_API_Key
+        Safe_Browsing_API_Key = CONF.Safe_Browsing_API_Key        
 
     except Exception as err:
         err = sys.exc_info()
-        logging.error(" ConfParser Error: " + str(err))
+        logging.error(" ConfParser Error: "+str(err))
 
 
 def get_random_UserAgent_header(lines):
@@ -186,7 +184,7 @@ def get_requests(hostname, lines, conn, Proxy):
     # if the certificate is a wildcard, display it but no testing.
     # and return.
     if '*' in hostname:
-        hues.warn('wildcard certificate: no request for ' + hostname)
+        hues.warn('wildcard certificate: no request for '+hostname)
         return None
 
     url = 'https://' + hostname
@@ -242,7 +240,7 @@ def get_webpage_title(request):
             title = ""
         return title
     except Exception as e:
-        print("error in get_webpage_title(): " + str(e))
+        print("error in get_webpage_title(): "+str(e))
         return ""
 
 
@@ -301,7 +299,7 @@ def scan_hostname(hostname, SerialNumber, lines, Proxy, conn, site_infos):
     try:
         r = get_requests(hostname, lines, conn, Proxy)
         if r is not None:
-            hues.success('HTTP ' + str(r.status_code) + ' - ' + hostname)
+            hues.success('HTTP '+str(r.status_code)+' - ' + hostname)
 
             # retrieve the title of the homepage
             title = get_webpage_title(r)
@@ -313,7 +311,7 @@ def scan_hostname(hostname, SerialNumber, lines, Proxy, conn, site_infos):
 
             # retrieve Google Safe Browsing Lookup API status for this hostname
             if Safe_Browsing_API_Key is not '':
-                sb = safebrowsing.LookupAPI(Safe_Browsing_API_Key)
+                sb = safebrowsing.LookupAPI(Safe_Browsing_API_Key) 
                 safe_browsing_status = sb.threat_matches_find(hostname)
             else:
                 safe_browsing_status = "No API key in config file"
@@ -357,13 +355,13 @@ def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
     :param Proxy: proxy value
     :param conn: db connection
 
-    :return: True if everything went fine, False if something went wrong
+    :return: True if everything went fine, False if smething went wrong    
     """
     try:
         # Query rows that have not StillInvestig column already set
-        # get Domain, Fingerprint and FirstSeen columns
+        # get Domain and Fingerprint column
         cur = conn.cursor()
-        cur.execute("SELECT Domain,Fingerprint,FirstSeen FROM " + TABLEname +
+        cur.execute("SELECT Domain,Fingerprint FROM "+TABLEname +
                     " WHERE StillInvestig IS NULL or StillInvestig = ''")
         rows = cur.fetchall()
 
@@ -374,7 +372,7 @@ def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
             pass
         except:
             err = sys.exc_info()
-            logging.error(" Can't create Alerts_dir: " + str(err))
+            logging.error(" Can't create Alerts_dir: "+str(err))
 
         # read User Agent file
         try:
@@ -391,57 +389,45 @@ def parse_and_scan_all_hostnames(TABLEname, Proxy, conn):
         for row in rows:
             hostname = row[0]
             SerialNumber = row[1]
-
             site_infos = {}
 
             site_infos = scan_hostname(hostname, SerialNumber, lines, Proxy, conn, site_infos)
 
-            # Is time check limit reached?
-            now = datetime.datetime.strptime(str(datetime.datetime.utcnow().replace(microsecond=0).isoformat()), "%Y-%m-%dT%H:%M:%S")
-            FirstSeen = datetime.datetime.strptime(row[2], "%Y-%m-%dT%H:%M:%S")
-            time_delta = (now - FirstSeen).days
-            if time_delta < int(Alert_Monitor_timelapse):
-                if not site_infos:
-                    continue
-                else:
-                        # if the site is UP, we log the timestamp in the database in order to not reprocess it
-                        cur.execute("UPDATE " + TABLEname + " SET StillInvestig= ? WHERE Domain = ? AND Fingerprint = ? ;",
-                                    (format(datetime.datetime.utcnow().replace(microsecond=0).isoformat()), hostname, SerialNumber))
-                        conn.commit
-                        if fqdn_dirs:
-                            # Split hostname into a reverse list (TLD first)
-                            words = hostname.split(".")[::-1]
-                            FQDN_dir = Alerts_dir
-                            for w in words:
-                                FQDN_dir = FQDN_dir + "/" + w
-                            try:
-                                os.makedirs(FQDN_dir, mode=0o777, exist_ok=True)
-                            except FileExistsError:
-                                pass
-                            except:
-                                err = sys.exc_info()
-                                logging.error(" Can't create Alerts_dir: " + str(err))
-                            print("Creating " + FQDN_dir + "/" + hostname + ".json : " + str(site_infos))
-                            f = open(FQDN_dir + "/" + hostname + ".json", "w")
-                        else:
-                            print("Creating " + Alerts_dir + "/" + hostname + ".json : " + str(site_infos))
-                            # log the hostname under the form of a file under the /alerts subdirectory
-                            # + fill the file with informations like ASN/abuse email/IP/web page title etc
-                            # next task: the SOC/Cert has to investigate this host.
-                            f = open(Alerts_dir + "/" + hostname + ".json", "w")
-                        json.dump(site_infos, f, indent=4)
-                        f.close()
-                        if Notification_Destination is not '':
-                            body_site_infos = str(site_infos).replace(', \'', chr(10) + '\'')
-                            body_site_infos = body_site_infos.replace('{', '')
-                            body_site_infos = body_site_infos.replace('}', '')
-                            apobj.notify(title="[CertStreamMonitor] Alert: " + hostname, body=body_site_infos,)
-
-            # Time's up, stop checking entry
+            if not site_infos:
+                continue
             else:
-                hues.warn("  {} - end of monitoring reached ({} days)".format(hostname, Alert_Monitor_timelapse))
-                cur.execute("UPDATE " + TABLEname + " SET StillInvestig= '{}{}' WHERE Domain = '{}' AND Fingerprint = '{}' ;".format("Stop checking on ", now.date(), hostname, SerialNumber))
+                # if the site is UP, we log the timestamp in the database in order to not reprocess it
+                cur.execute("UPDATE "+TABLEname+" SET StillInvestig= ? WHERE Domain = ? AND Fingerprint = ? ;",
+                            (format(datetime.datetime.utcnow().replace(microsecond=0).isoformat()), hostname, SerialNumber))
                 conn.commit
+                if fqdn_dirs:
+                    # Split hostname into a reverse list (TLD first)
+                    words = hostname.split(".")[::-1]
+                    FQDN_dir = Alerts_dir
+                    for w in words:
+                        FQDN_dir = FQDN_dir + "/" + w
+                    try:
+                        os.makedirs(FQDN_dir, mode=0o777, exist_ok=True)
+                    except FileExistsError:
+                        pass
+                    except:
+                        err = sys.exc_info()
+                        logging.error(" Can't create Alerts_dir: "+str(err))
+                    print("Creating "+FQDN_dir+"/"+hostname+".json : " + str(site_infos))
+                    f = open(FQDN_dir+"/"+hostname+".json", "w")
+                else:
+                    print("Creating "+Alerts_dir+"/"+hostname+".json : " + str(site_infos))
+                    # log the hostname under the form of a file under the /alerts subdirectory
+                    # + fill the file with informations like ASN/abuse email/IP/web page title etc
+                    # next task: the SOC/Cert has to investigate this host.
+                    f = open(Alerts_dir+"/"+hostname+".json", "w")
+                json.dump(site_infos, f, indent=4)
+                f.close()
+                if Notification_Destination is not '':
+                    body_site_infos = str(site_infos).replace(', \'',chr(10)+'\'')
+                    body_site_infos = body_site_infos.replace('{','')
+                    body_site_infos = body_site_infos.replace('}','')
+                    apobj.notify(title="[CertStreamMonitor] Alert: "+hostname, body=body_site_infos,)
 
         return True
 
