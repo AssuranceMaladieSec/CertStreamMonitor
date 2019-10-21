@@ -9,7 +9,7 @@ CertStreamMonitor architecture relies on 3 scripts :
   - reading the certstream feed, it selects hostnames covered by certificates that match your criteria (SearchKeyWords parameter in conf).
   - it writes these hostnames along with its certificate relevant informations to the database.
 - `scanhost.py`
-  - this script can be run as often you want.
+  - this script can be executed as often as you like.
   - it checks if site corresponding to the hostanme stored in DB is UP ot not.
   - it collects informations about the sites that are up to DB and to a JSON file.
 - `gethost.py`
