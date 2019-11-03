@@ -9,7 +9,7 @@ CertStreamMonitor architecture relies on 3 scripts :
   - reading the certstream feed, it selects hostnames covered by certificates that match your criteria (SearchKeyWords parameter in conf).
   - it writes these hostnames along with its certificate relevant informations to the database.
 - `scanhost.py`
-  - this script can be run as often you want.
+  - this script can be executed as often as you like.
   - it checks if site corresponding to the hostanme stored in DB is UP ot not.
   - it collects informations about the sites that are up to DB and to a JSON file.
 - `gethost.py`
@@ -23,14 +23,14 @@ CertStreamMonitor architecture relies on 3 scripts :
   - store hostnames found along with its certificate relevant data into a sqlite3 database
 - **Alerting:**
   - for each hostname not already flagged as up : check if corresponding site is up or not
-  - if it is, it :
-    - collects informations (IP address, AS informations, HTTP code, web page title, abuse email, (optional) google safe browsing status)
-    - write them to a JSON file in the `/alerts` directory (default value) to push forward investigation.
-    - (optional) push them to a destination (through apprise package) such as an email address, a Slack channel or even Twitter account
-    - flags the hostname in the DB as up
-  - if it is not :
-    - the hostname will be checked until the Alert_Monitor_timelapse configuration variable (in days) will be reached
-    - when the limit is reached a string like `Stop checking on 2019-09-27` is included into the StillInvestig column
+    - if it's up :
+      - collects informations (IP address, AS informations, HTTP code, web page title, abuse email, (optional) google safe browsing status)
+      - write them to a JSON file in the `/alerts` directory (default value) to push forward investigation.
+      - (optional) push them to a destination (through apprise package) such as an email address, a Slack channel or even Twitter account
+      - flags the hostname in the DB as up
+    - if it's not :
+      - the hostname will be checked until the Alert_Monitor_timelapse configuration variable (in days) will be reached
+      - when the limit is reached a string like `Stop checking on 2019-09-27` is included into the StillInvestig column
 
 ## Requirements
 - Python 3
@@ -49,7 +49,7 @@ $ pip3 install -r requirements.txt
 ~~~
 
 ## Configuration file
-You can find a configuration file example placed into 'conf' directory.
+You can find a configuration file example in 'conf' directory.
 Configurable parameters are:
 - `SearchKeywords`: Keywords to look for (with '|' (or) as separator)
 - `DetectionThreshold`: set the minimum number of detected SearchKeywords in a hostname before writing it to DB. Under this value but above zero, detected hostnames are only written to logfile. Default value: 2.
