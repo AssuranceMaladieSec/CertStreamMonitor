@@ -14,6 +14,8 @@ CertStreamMonitor architecture relies on 3 scripts :
   - it collects informations about the sites that are up to DB and to a JSON file.
 - `gethost.py`
    - Due to [@nbeguier](https://github.com/nbeguier) contribution, the project has also a `gethost.py` script that provides a way for security operators to request the last hostnames which have been detected by `certstreammointor.py` since X seconds.
+- `check_rules.py`
+   - Due to [@nbeguier](https://github.com/nbeguier) contribution, the project has also a `check_rules.py` script that provides a way for security operators to check their own rules, especially SearchKeywords, DetectionThreshold and BlacklistKeywords.
 
 ## Features
 - **Monitoring:**
@@ -127,6 +129,38 @@ socialparadiseweb.cf.socialparadise.cf None
 rapportannuel-assurancemaladie.paris None
 socialmediaforsocialaction.com 2019-06-12T15:54:31
 social.socialbride.co.za None
+~~~
+
+### check_rules.py
+
+~~~
+$ python3 check_rules.py --help
+
+    -h --help       Print this help
+    -c --config     Configuration file to use
+    -d --domain     Domain name to check
+~~~
+
+~~~
+# No match - Keywords not found.
+$ ./check_rules.py -c conf/example.conf -d www.google.com
+Looking for these strings: paypal|apple|account|secure|login, detection threshold: 2
+No match - Keywords not found.
+
+# No match - Detection threashold not reached.
+$ ./check_rules.py -c conf/example.conf -d paypal.com
+Looking for these strings: paypal|apple|account|secure|login, detection threshold: 2
+No match - Detection threashold not reached.
+
+# No match - Blacklisted keywords.
+$ ./check_rules.py -c conf/example.conf -d login-paypal.gouv
+Looking for these strings: paypal|apple|account|secure|login, detection threshold: 2
+No match - Blacklisted keywords.
+
+# This is a match, detection threashold reached.
+$ ./check_rules.py -c conf/example.conf -d login-paypal.com
+Looking for these strings: paypal|apple|account|secure|login, detection threshold: 2
+This is a match, detection threashold reached.
 ~~~
 
 ## Authors
