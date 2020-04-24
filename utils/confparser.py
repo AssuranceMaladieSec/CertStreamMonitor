@@ -103,6 +103,13 @@ class ConfParser:
                 except:
                     self.Safe_Browsing_API_Key = ''
 
+                try:
+                    self.ELASTICSEARCH_server = self.config['ELASTICSEARCH']['server']
+                    self.ELASTICSEARCH_index = self.config['ELASTICSEARCH']['index']
+                except:
+                    self.ELASTICSEARCH_server = ''
+                    self.ELASTICSEARCH_index = ''
+
         except IOError:
             #print("[!!!] Configuration file Error: "+Confile)
             logging.error(" Configuration file Error: " + Confile)

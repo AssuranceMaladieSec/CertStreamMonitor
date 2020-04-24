@@ -57,6 +57,11 @@ def ConfAnalysis(ConfFile):
     global Proxy_Port
     global Proxy_Username
     global Proxy_Password
+    global Elasticsearch_enabled
+    global Elasticsearch_connection
+    global Elasticsearch_server
+    global Elasticsearch_index
+    Elasticsearch_enabled = False
 
     try:
         CONF = ConfParser(ConfFile)
@@ -72,7 +77,9 @@ def ConfAnalysis(ConfFile):
         Proxy_Port = CONF.Proxy_Port
         Proxy_Username = CONF.Proxy_Username
         Proxy_Password = CONF.Proxy_Password
-
+        Elasticsearch_server = CONF.ELASTICSEARCH_server
+        Elasticsearch_index = CONF.ELASTICSEARCH_index
+        
     except:
         err = sys.exc_info()
         logging.error(" ConfParser Error: " + str(err))
@@ -150,6 +157,9 @@ def print_callback(message, context):
                                                                                                               ['chain'][0]['subject']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
                 sys.stdout.flush()
 
+            if Elasticsearch_enabled == True:
+                Elasticsearch_result = Elasticsearch_connection.index(index=Elasticsearch_index, body={"searchkeyword": results[0], "Domain": Domain, "Issuer": message['data']['chain'][0]['subject']['aggregated'], "Fingerprint": message['data']['leaf_cert']['fingerprint'], "StartTime": datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat(), "timestamp": datetime.datetime.now()})
+
         # If just one keyword occurence, put data into debug log file
         elif FindNb > 0 and FindNb < DetectionThreshold:
             logging.debug("DETECTION THRESHOLD VALUE NOT REACHED - {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(host, "",
@@ -170,6 +180,25 @@ def main():
         # Database
         SQL = SqliteCmd(DBFile)
         SQL.SQLiteCreateTable(TABLEname)
+
+        # Elasticsearch
+        if (Elasticsearch_server and Elasticsearch_index):
+          try:
+            from elasticsearch import Elasticsearch
+            global Elasticsearch_enabled
+            global Elasticsearch_connection
+
+            config = {
+                     'host':Elasticsearch_server
+                     }
+            Elasticsearch_connection = Elasticsearch([config], timeout=50)
+            Elasticsearch_connection.indices.create(index=Elasticsearch_index, ignore=400)
+            Elasticsearch_enabled = True
+            logger = logging.getLogger('elasticsearch')
+            logger.setLevel(logging.CRITICAL)
+          except Exception as error:
+            logging.error("Elasticsearch Error : "+str(error))
+            
 
         # logging
         logger = logging.getLogger()
