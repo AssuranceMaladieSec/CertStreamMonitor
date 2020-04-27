@@ -231,8 +231,9 @@ def main():
         # Work, connection to the CT logs aggregator (ACTServer), through a HTTP proxy if configured into configuration file
         logging.info("Looking for these strings: " + SearchKeywords +
                      ", detection threshold: " + str(DetectionThreshold))
-        certstream.listen_for_events(print_callback, ACTServer, http_proxy_host=Proxy_Host,
-                                     http_proxy_port=Proxy_Port, http_proxy_auth=(Proxy_Username, Proxy_Password))
+        #certstream.listen_for_events(print_callback, ACTServer, http_proxy_host=Proxy_Host,
+        #                             http_proxy_port=Proxy_Port, http_proxy_auth=(Proxy_Username, Proxy_Password))
+        certstream.listen_for_events(print_callback, ACTServer)
         print_callback()
 
         SQL.SQLiteClose()
