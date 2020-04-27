@@ -24,6 +24,10 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
+# Elasticsearch : disable insecure SSL Warning
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 VERSION = "0.6.0"
 
 def usage():
@@ -61,6 +65,8 @@ def ConfAnalysis(ConfFile):
     global Elasticsearch_connection
     global Elasticsearch_server
     global Elasticsearch_index
+    global Elasticsearch_user
+    global Elasticsearch_pass
     Elasticsearch_enabled = False
 
     try:
@@ -79,6 +85,8 @@ def ConfAnalysis(ConfFile):
         Proxy_Password = CONF.Proxy_Password
         Elasticsearch_server = CONF.ELASTICSEARCH_server
         Elasticsearch_index = CONF.ELASTICSEARCH_index
+        Elasticsearch_user = CONF.ELASTICSEARCH_user
+        Elasticsearch_pass = CONF.ELASTICSEARCH_pass
         
     except:
         err = sys.exc_info()
@@ -191,7 +199,10 @@ def main():
             config = {
                      'host':Elasticsearch_server
                      }
-            Elasticsearch_connection = Elasticsearch([config], timeout=50)
+            if Elasticsearch_user == None:
+              Elasticsearch_connection = Elasticsearch([config], timeout=50)
+            else:
+              Elasticsearch_connection = Elasticsearch([config],http_auth=(Elasticsearch_user,Elasticsearch_pass), timeout=50,use_ssl=True,verify_certs=False)
             Elasticsearch_connection.indices.create(index=Elasticsearch_index, ignore=400)
             Elasticsearch_enabled = True
             logger = logging.getLogger('elasticsearch')
