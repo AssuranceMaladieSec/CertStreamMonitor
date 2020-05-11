@@ -170,7 +170,7 @@ This is a match, detection threashold reached.
 ## Contributors
 - [@ant1](https://github.com/ant1): [#3](https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/3)
 - [@xme](https://github.com/xme): [#8](https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/8), [#9](https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/9)
-- [@nbeguier](https://github.com/nbeguier): [#20](https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/20), [#21](https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/21)
+- [@nbeguier](https://github.com/nbeguier): [#20](https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/20), [#21](https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/21), [#28] (https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/28)
 
 ## Presentations
 - [SSTIC 2018](https://www.sstic.org/2018/) | June 2018 - C.Brocas, T. Damonneville: *"Certificate Transparency ou comment un nouveau standard peut aider votre veille sur certaines menaces"*.  [Slides (fr)](https://www.sstic.org/2018/presentation/certificate_transparency_ou_comment_un_nouveau_standard_peut_aider_votre_analyse_des_menaces/), [full article (fr)](https://www.sstic.org/media/SSTIC2018/SSTIC-actes/certificate_transparency_ou_comment_un_nouveau_sta/SSTIC2018-Article-certificate_transparency_ou_comment_un_nouveau_standard_peut_aider_votre_analyse_des_menaces-broc_AR1OQsw.pdf), [video (fr)](https://static.sstic.org/videos2018/SSTIC_2018-06-13_P04.mp4).
