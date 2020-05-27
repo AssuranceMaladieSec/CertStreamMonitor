@@ -24,6 +24,10 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
+# Elasticsearch : disable insecure SSL Warning
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 VERSION = "0.6.0"
 
 def usage():
@@ -57,6 +61,13 @@ def ConfAnalysis(ConfFile):
     global Proxy_Port
     global Proxy_Username
     global Proxy_Password
+    global Elasticsearch_enabled
+    global Elasticsearch_connection
+    global Elasticsearch_server
+    global Elasticsearch_index
+    global Elasticsearch_user
+    global Elasticsearch_pass
+    Elasticsearch_enabled = False
 
     try:
         CONF = ConfParser(ConfFile)
@@ -72,7 +83,11 @@ def ConfAnalysis(ConfFile):
         Proxy_Port = CONF.Proxy_Port
         Proxy_Username = CONF.Proxy_Username
         Proxy_Password = CONF.Proxy_Password
-
+        Elasticsearch_server = CONF.ELASTICSEARCH_server
+        Elasticsearch_index = CONF.ELASTICSEARCH_index
+        Elasticsearch_user = CONF.ELASTICSEARCH_user
+        Elasticsearch_pass = CONF.ELASTICSEARCH_pass
+        
     except:
         err = sys.exc_info()
         logging.error(" ConfParser Error: " + str(err))
@@ -150,6 +165,9 @@ def print_callback(message, context):
                                                                                                               ['chain'][0]['subject']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
                 sys.stdout.flush()
 
+            if Elasticsearch_enabled == True:
+                Elasticsearch_result = Elasticsearch_connection.index(index=Elasticsearch_index, body={"searchkeyword": results[0], "Domain": Domain, "Issuer": message['data']['chain'][0]['subject']['aggregated'], "Fingerprint": message['data']['leaf_cert']['fingerprint'], "StartTime": datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat(), "timestamp": datetime.datetime.now()})
+
         # If just one keyword occurence, put data into debug log file
         elif FindNb > 0 and FindNb < DetectionThreshold:
             logging.debug("DETECTION THRESHOLD VALUE NOT REACHED - {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(host, "",
@@ -171,6 +189,28 @@ def main():
         SQL = SqliteCmd(DBFile)
         SQL.SQLiteCreateTable(TABLEname)
 
+        # Elasticsearch
+        if (Elasticsearch_server and Elasticsearch_index):
+          try:
+            from elasticsearch import Elasticsearch
+            global Elasticsearch_enabled
+            global Elasticsearch_connection
+
+            config = {
+                     'host':Elasticsearch_server
+                     }
+            if Elasticsearch_user == None:
+              Elasticsearch_connection = Elasticsearch([config], timeout=50)
+            else:
+              Elasticsearch_connection = Elasticsearch([config],http_auth=(Elasticsearch_user,Elasticsearch_pass), timeout=50,use_ssl=True,verify_certs=False)
+            Elasticsearch_connection.indices.create(index=Elasticsearch_index, ignore=400)
+            Elasticsearch_enabled = True
+            logger = logging.getLogger('elasticsearch')
+            logger.setLevel(logging.CRITICAL)
+          except Exception as error:
+            logging.error("Elasticsearch Error : "+str(error))
+            
+
         # logging
         logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
@@ -191,8 +231,9 @@ def main():
         # Work, connection to the CT logs aggregator (ACTServer), through a HTTP proxy if configured into configuration file
         logging.info("Looking for these strings: " + SearchKeywords +
                      ", detection threshold: " + str(DetectionThreshold))
-        certstream.listen_for_events(print_callback, ACTServer, http_proxy_host=Proxy_Host,
-                                     http_proxy_port=Proxy_Port, http_proxy_auth=(Proxy_Username, Proxy_Password))
+        #certstream.listen_for_events(print_callback, ACTServer, http_proxy_host=Proxy_Host,
+        #                             http_proxy_port=Proxy_Port, http_proxy_auth=(Proxy_Username, Proxy_Password))
+        certstream.listen_for_events(print_callback, ACTServer)
         print_callback()
 
         SQL.SQLiteClose()
