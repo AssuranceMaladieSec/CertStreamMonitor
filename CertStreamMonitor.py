@@ -143,7 +143,7 @@ def print_callback(message, context):
             FirstSeen = format(datetime.datetime.utcnow(
             ).replace(microsecond=0).isoformat())
             # Test if entry still exist in DB
-            if SQL.SQLiteVerifyEntry(TABLEname, Domain) is 0:
+            if SQL.SQLiteVerifyEntry(TABLEname, Domain) == 0:
                 SQL.SQLiteInsert(TABLEname, Domain, SAN, Issuer,
                                  Fingerprint, Startime, FirstSeen)
                 sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), host, "", message['data']
