@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2018 Caisse nationale d'Assurance Maladie
+# 2020-2021 Updated by Nicolas BEGUIER (nicolas.beguier@adevinta.com)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
-VERSION = "0.6.0"
+VERSION = "0.7.0"
 
 def usage():
     """
@@ -136,24 +137,23 @@ def print_callback(message, context):
             # Data extraction to populate DB
             Domain = host
             SAN = ""
-            Issuer = message['data']['chain'][0]['subject']['aggregated']
+            Issuer = message['data']['leaf_cert']['issuer']['aggregated']
             Fingerprint = message['data']['leaf_cert']['fingerprint']
             Startime = datetime.datetime.utcfromtimestamp(
                 message['data']['leaf_cert']['not_before']).isoformat()
             FirstSeen = format(datetime.datetime.utcnow(
             ).replace(microsecond=0).isoformat())
             # Test if entry still exist in DB
-            if SQL.SQLiteVerifyEntry(TABLEname, Domain) is 0:
+            if SQL.SQLiteVerifyEntry(TABLEname, Domain) == 0:
                 SQL.SQLiteInsert(TABLEname, Domain, SAN, Issuer,
                                  Fingerprint, Startime, FirstSeen)
-                sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), host, "", message['data']
-                                                                                                              ['chain'][0]['subject']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
+                sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), host, "", message['data']['leaf_cert']['issuer']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
                 sys.stdout.flush()
 
         # If just one keyword occurence, put data into debug log file
         elif FindNb > 0 and FindNb < DetectionThreshold:
             logging.debug("DETECTION THRESHOLD VALUE NOT REACHED - {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(host, "",
-                                                                                                                                       message['data']['chain'][0]['subject']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
+                                                                                                                                       message['data']['leaf_cert']['issuer']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
 
 # Main
 
