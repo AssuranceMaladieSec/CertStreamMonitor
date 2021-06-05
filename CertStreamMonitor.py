@@ -24,7 +24,7 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
-VERSION = "0.7"
+VERSION = "0.7.1"
 
 def usage():
     """
@@ -145,12 +145,12 @@ def print_callback(message, context):
             # Test if entry still exist in DB
             if SQL.SQLiteVerifyEntry(TABLEname, Domain) == 0:
                 SQL.SQLiteInsert(TABLEname, Domain, SAN, Issuer, Fingerprint, Startime, FirstSeen)
-                sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), host, "", message['data']['leaf_cert']['subject']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
+                sys.stdout.write(u"[{}] {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})\n".format(datetime.datetime.now().replace(microsecond=0).isoformat(), host, "", message['data']['leaf_cert']['issuer']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
                 sys.stdout.flush()
 
         # If just one keyword occurence, put data into debug log file
         elif FindNb > 0 and FindNb < DetectionThreshold:
-            logging.debug("DETECTION THRESHOLD VALUE NOT REACHED - {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(host, "", message['data']['leaf_cert']['subject']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
+            logging.debug("DETECTION THRESHOLD VALUE NOT REACHED - {} (SAN: {}) (Issuer: {}) (Fingerprint: {}) (StartTime: {})".format(host, "", message['data']['leaf_cert']['issuer']['aggregated'], message['data']['leaf_cert']['fingerprint'], datetime.datetime.utcfromtimestamp(message['data']['leaf_cert']['not_before']).isoformat()))
 
 
 # Main
