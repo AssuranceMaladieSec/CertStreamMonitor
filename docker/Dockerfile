@@ -1,6 +1,6 @@
-FROM alpine:latest
+FROM alpine:3.13.5
 
-LABEL maintainer="Damonneville Thomas <thomas.damonneville__A__assurance-maladie.fr>"
+LABEL maintainer="Damonneville Thomas <thdamon__A__gmail.com>"
 
 ENV INITSYSTEM=on
 
@@ -11,16 +11,23 @@ python3 \
 sqlite \
 openrc \
 supervisor \
+gcc \
+python3-dev \
+musl-dev \
+libffi-dev \
+openssl-dev \
+py3-pip \
+cargo \
 tor
 
 # Clone the project files into the docker container and install it
-RUN git clone https://github.com/AssuranceMaladieSec/CertStreamMonitor.git /opt/CertStreamMonitor
-RUN pip3 install --upgrade pip
+COPY / /opt/CertStreamMonitor
+RUN pip3 install --upgrade pip wheel
 WORKDIR /opt/CertStreamMonitor/
 RUN pip3 install -r requirements.txt
 
 # Add custom supervisor config
-COPY supervisord.conf /etc/supervisor/conf.d/
+COPY docker/supervisord.conf /etc/supervisor/conf.d/
 CMD ["/usr/bin/supervisord"; "-c"; "/etc/supervisor/conf.d/supervisord.conf"]
 
 # Make some clean
