@@ -5,7 +5,7 @@ Monitor certificates generated for specific domain strings and associated, store
 CertStreamMonitor architecture relies on 3 scripts :
 
 - `certstreammonitor.py`
-  - this script runs as a daemon.
+  - this script runs as a daemon (you can use provided systemd unit example to automatize its usage)
   - reading the certstream feed, it selects hostnames covered by certificates that match your criteria (SearchKeyWords parameter in conf).
   - it writes these hostnames along with its certificate relevant informations to the database.
 - `scanhost.py`
