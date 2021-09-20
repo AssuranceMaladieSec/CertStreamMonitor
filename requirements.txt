@@ -1,5 +1,5 @@
 appdirs==1.4.4
-apprise==0.9.3
+apprise==0.9.5.1
 CacheControl==0.12.6
 certstream==1.12
 cffi==1.14.5
