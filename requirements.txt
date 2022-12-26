@@ -38,4 +38,4 @@ toml==0.10.2
 urllib3==1.26.5
 webencodings==0.5.1
 websocket-client==1.0.1
-wheel==0.36.2
+wheel==0.38.1
