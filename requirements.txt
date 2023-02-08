@@ -7,7 +7,7 @@ chardet==4.0.0
 click==8.0.1
 colorama==0.4.4
 contextlib2==0.6.0
-cryptography==3.4.7
+cryptography==39.0.1
 distlib==0.3.1
 distro==1.5.0
 dnspython==2.0.0
