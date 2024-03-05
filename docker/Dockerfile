@@ -1,4 +1,4 @@
-FROM alpine:3.13.5
+FROM alpine:3.19
 
 LABEL maintainer="Damonneville Thomas <thdamon__A__gmail.com>"
 
@@ -22,9 +22,13 @@ tor
 
 # Clone the project files into the docker container and install it
 COPY / /opt/CertStreamMonitor
-RUN pip3 install --upgrade pip wheel
+
+# Activate python virtual environment
+RUN python3 -m venv /opt/venv
+
 WORKDIR /opt/CertStreamMonitor/
-RUN pip3 install -r requirements.txt
+RUN /opt/venv/bin/python3 -m pip install --upgrade pip
+RUN /opt/venv/bin/pip install -r requirements.txt
 
 # Add custom supervisor config
 COPY docker/supervisord.conf /etc/supervisor/conf.d/
