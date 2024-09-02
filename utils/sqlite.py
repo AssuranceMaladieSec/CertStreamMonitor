@@ -27,7 +27,7 @@ class SqliteCmd(object):
 		res = self.cur.execute('SELECT EXISTS (SELECT 1 FROM '+TABLEname+' WHERE Domain='+"\""+Domain+"\""+' LIMIT 1);')
 		fres = res.fetchone()[0]
 		# 0ô
-		if fres is not 0:
+		if fres != 0:
 			return 1
 		else:
 			return 0

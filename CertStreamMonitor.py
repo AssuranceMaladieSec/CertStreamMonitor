@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/venv/bin/python3
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2018-2021 Caisse nationale d'Assurance Maladie
@@ -24,7 +24,7 @@ from utils.confparser import ConfParser
 from utils.utils import TimestampNow, VerifyPath
 from utils.sqlite import SqliteCmd
 
-VERSION = "0.7.1"
+VERSION = "0.7.2"
 
 def usage():
     """

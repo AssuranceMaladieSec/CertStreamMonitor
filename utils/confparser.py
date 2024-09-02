@@ -17,7 +17,7 @@ class ConfParser:
             self.config = configparser.ConfigParser()
 
             with open(Confile, 'r', encoding='utf-8') as f:
-                self.config.readfp(f)
+                self.config.read_file(f)
 
                 # search strings
                 self.SearchKeywords = self.config['SEARCH']['SearchKeywords']
