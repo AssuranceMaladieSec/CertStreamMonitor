@@ -32,6 +32,14 @@ class ConfParser:
 
                 # Logging
                 self.LogFile = self.config['LOGGING']['LogFile']
+                try:
+                    self.LogLevel = self.config['LOGGING']['LogLevel']
+                except:
+                    self.LogLevel = logging.DEBUG
+                try:
+                    self.LogType = self.config['LOGGING']['LogType']
+                except:
+                    self.LogType = 'file'
 
                 # Proxy
                 try:
