@@ -49,6 +49,8 @@ def ConfAnalysis(ConfFile):
     global DBFile
     global TABLEname
     global LogFile
+    global LogLevel
+    global LogType
     global SearchKeywords
     global BlacklistKeywords
     global DetectionThreshold
@@ -64,6 +66,8 @@ def ConfAnalysis(ConfFile):
         DBFile = CONF.DBFile
         TABLEname = CONF.TABLEname
         LogFile = CONF.LogFile
+        LogLevel = CONF.LogLevel
+        LogType = CONF.LogType
         SearchKeywords = CONF.SearchKeywords
         BlacklistKeywords = CONF.BlacklistKeywords
         DetectionThreshold = CONF.DetectionThreshold
@@ -169,20 +173,22 @@ def main():
 
         # logging
         logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(LogLevel)
 
         # file handler (10MB, 10 rotations)
-        format = logging.Formatter(
-            '[%(levelname)s:%(name)s] %(asctime)s - %(message)s')
-        file_handler = RotatingFileHandler(LogFile, 'a', 10000000, 10)
-        file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(format)
-        logger.addHandler(file_handler)
-
-        # term handler
-        stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging.INFO)
-        logger.addHandler(stream_handler)
+        if LogType == 'file':
+            format = logging.Formatter(
+                '[%(levelname)s:%(name)s] %(asctime)s - %(message)s')
+            file_handler = RotatingFileHandler(LogFile, 'a', 10000000, 10)
+            file_handler.setFormatter(format)
+            logger.addHandler(file_handler)
+        # syslog handler
+        elif LogType == 'syslog':
+            stream_handler = logging.StreamHandler()
+            logger.addHandler(stream_handler)
+        else:
+            logging.error("Unsupported log type " + LogType + ". Exiting...")
+            sys.exit(1)
 
         # Work, connection to the CT logs aggregator (ACTServer), through a HTTP proxy if configured into configuration file
         logging.info("Looking for these strings: " + SearchKeywords +
