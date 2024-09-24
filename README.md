@@ -166,7 +166,7 @@ This is a match, detection threashold reached.
 ## Authors
 - Thomas Damonneville ([thomas.damonneville@assurance-maladie.fr](mailto:thomas.damonneville@assurance-maladie.fr))
 - Christophe Brocas ([christophe.brocas@assurance-maladie.fr](mailto:christophe.brocas@assurance-maladie.fr))
-And of course, a big shout out to [Calidog Security](https://calidog.io/) and its fantastic [CertStream service](https://certstream.calidog.io/) without who nothing would have been possible!
+- And of course, a big shout out to [Calidog Security](https://calidog.io/) and its fantastic [CertStream service](https://certstream.calidog.io/) without who nothing would have been possible!
 
 ## Contributors
 - [@ant1](https://github.com/ant1): [#3](https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/3)
