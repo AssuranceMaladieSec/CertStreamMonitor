@@ -6,7 +6,7 @@ CertStreamMonitor architecture relies on 3 scripts :
 
 - `certstreammonitor.py`
   - this script runs as a daemon.
-  - reading the certstream feed, it selects hostnames covered by certificates that match your criteria (SearchKeyWords parameter in conf).
+  - reading the certstream feed from [CertStream service](https://certstream.calidog.io/) provided by [Calidog Security](https://calidog.io/) (thanks so much for this!), it selects hostnames covered by certificates that match your criteria (SearchKeyWords parameter in conf).
   - it writes these hostnames along with its certificate relevant informations to the database.
 - `scanhost.py`
   - this script can be executed as often as you like.
@@ -166,6 +166,7 @@ This is a match, detection threashold reached.
 ## Authors
 - Thomas Damonneville ([thomas.damonneville@assurance-maladie.fr](mailto:thomas.damonneville@assurance-maladie.fr))
 - Christophe Brocas ([christophe.brocas@assurance-maladie.fr](mailto:christophe.brocas@assurance-maladie.fr))
+And of course, a big shout out to [Calidog Security](https://calidog.io/) and its fantastic [CertStream service](https://certstream.calidog.io/) without who nothing would have been possible!
 
 ## Contributors
 - [@ant1](https://github.com/ant1): [#3](https://github.com/AssuranceMaladieSec/CertStreamMonitor/pull/3)
