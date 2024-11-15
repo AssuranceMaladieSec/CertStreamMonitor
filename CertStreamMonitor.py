@@ -67,6 +67,8 @@ def ConfAnalysis(ConfFile):
         TABLEname = CONF.TABLEname
         LogFile = CONF.LogFile
         LogLevel = CONF.LogLevel
+        #LogLevel needs to be converted to int
+        LogLevel = int(LogLevel)  
         LogType = CONF.LogType
         SearchKeywords = CONF.SearchKeywords
         BlacklistKeywords = CONF.BlacklistKeywords
