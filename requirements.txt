@@ -1,7 +1,7 @@
 appdirs==1.4.4
 apprise==1.7.1
 CacheControl==0.13.1
-certifi==2023.11.17
+certifi==2024.7.4
 certstream==1.12
 cffi==1.16.0
 chardet==5.2.0
